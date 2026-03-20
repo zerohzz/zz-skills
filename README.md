@@ -9,57 +9,29 @@ Skills shared by zerohzz （alex-huang.dev） for transforming written content i
 
 ## Installation
 
-### Quick Install (Recommended)
+**Step 1 — Register the marketplace in Claude Code:**
 
-```bash
-npx skills add zerohzz/zz-skills
 ```
-
-### Register as Plugin Marketplace
-
-Run the following command in Claude Code:
-
-```bash
 /plugin marketplace add zerohzz/zz-skills
 ```
 
-### Install Skills
+**Step 2 — Install a skill:**
 
-**Option 1: Via Browse UI**
-
-1. Select **Browse and install plugins**
-2. Select **zz-skills**
-3. Select the plugin(s) you want to install
-4. Select **Install now**
-
-**Option 2: Direct Install**
-
-```bash
+```
 /plugin install interactive-web@zz-skills
 ```
 
-**Option 3: Ask the Agent**
+### Available Skills
 
-Simply tell Claude Code:
-
-> Please install Skills from github.com/zerohzz/zz-skills
-
-### Available Plugins
-
-| Plugin | Description | Skills |
-|--------|-------------|--------|
-| **interactive-web** | Transform articles into interactive web experiences | [interactive-web](#interactive-web) |
+| Skill | Description |
+|-------|-------------|
+| **interactive-web** | Transform articles into interactive web experiences |
 
 ## Update Skills
 
-To update skills to the latest version:
-
-1. Run `/plugin` in Claude Code
-2. Switch to **Marketplaces** tab (use arrow keys or Tab)
-3. Select **zz-skills**
-4. Choose **Update marketplace**
-
-You can also **Enable auto-update** to get the latest versions automatically.
+```
+/plugin marketplace update zerohzz/zz-skills
+```
 
 ---
 
@@ -181,9 +153,7 @@ The skill produces three things:
 
 ## Demo
 
-Live demo: [zerohzz.github.io/zz-skills/interactive-web/demo/](https://zerohzz.github.io/zz-skills/interactive-web/demo/)
-
-Example output: [`interactive-web/examples/alex-huang-ai-website.html`](interactive-web/examples/alex-huang-ai-website.html) — "Building AI-Assisted Websites" transformed using the `step-sequencer` model and `dark-technical` direction.
+Live demo: [alex-huang.dev/skill-lab/interactive-web](https://alex-huang.dev/skill-lab/interactive-web)
 
 ---
 
