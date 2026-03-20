@@ -1,0 +1,22 @@
+{
+  "name": "zz-skills",
+  "owner": {
+    "name": "zerohzz",
+    "email": "zerohzz@users.noreply.github.com"
+  },
+  "metadata": {
+    "description": "Skills shared by zerohzz for transforming written content into interactive web experiences",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "interactive-web",
+      "description": "Transform articles into interactive web experiences",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./interactive-web/skill"
+      ]
+    }
+  ]
+}
