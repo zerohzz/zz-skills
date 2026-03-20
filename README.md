@@ -9,6 +9,12 @@ Skills shared by zerohzz （alex-huang.dev） for transforming written content i
 
 ## Installation
 
+### Quick Install (Recommended)
+
+```bash
+npx skills add zerohzz/zz-skills
+```
+
 ### Register as Plugin Marketplace
 
 Run the following command in Claude Code:

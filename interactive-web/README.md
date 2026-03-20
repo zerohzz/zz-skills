@@ -1,7 +1,6 @@
 # interactive-web
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![GitHub Pages](https://img.shields.io/badge/demo-live-brightgreen)](https://zerohzz.github.io/zz-skills/interactive-web/demo/)
 [![Version](https://img.shields.io/badge/version-1.0.0-blue)](CHANGELOG.md)
 
 > **Transform blog posts, essays, and technical articles into polished interactive web experiences — in a single Claude conversation.**
@@ -18,9 +17,7 @@ It does **not** produce generic templates. Every output is designed for the spec
 
 ## Demo
 
-**Live demo:** [zerohzz.github.io/zz-skills/interactive-web/demo/](https://zerohzz.github.io/zz-skills/interactive-web/demo/)
-
-![Demo screenshot](https://via.placeholder.com/900x450/0d1117/e6a817?text=interactive-web+demo+screenshot)
+**Live demo:** [alex-huang.dev/skill-lab/interactive-web](https://alex-huang.dev/skill-lab/interactive-web)
 
 ---
 
@@ -118,10 +115,6 @@ interactive-web/
 │       ├── normalize_article.py    # Stage 1: normalize input
 │       ├── extract_structure.py    # Stage 2: extract structure → structure.json
 │       └── build_page_plan.py      # Stage 3: select model + design → blueprint.json
-├── demo/
-│   └── index.html                  # Live product page (this demo site)
-├── examples/
-│   └── alex-huang-ai-website.html  # Example output: "Building AI-Assisted Websites"
 ├── README.md
 ├── CHANGELOG.md
 └── LICENSE
