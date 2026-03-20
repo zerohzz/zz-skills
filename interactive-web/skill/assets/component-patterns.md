@@ -1,7 +1,75 @@
 # Component Patterns
 
-Ready-to-use CSS and JS building blocks for the four design directions.
+Ready-to-use CSS and JS building blocks for the five design directions.
 Reference when building artifacts — adapt tokens from `blueprint.json`.
+
+---
+
+## Design Token Reference: `claude-like`
+
+Paste this into `<style>` as the base token set when using the `claude-like` direction.
+
+```css
+/* claude-like design system */
+:root {
+  /* Fonts */
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', 'Fira Code', monospace;
+
+  /* Palette */
+  --bg:           #faf9f7;
+  --surface:      #ffffff;
+  --border:       #e8e4dc;
+  --text-primary: #1a1816;
+  --text-muted:   #8b8580;
+  --accent:       #d97757;   /* terracotta coral — use sparingly */
+  --accent-deep:  #c9622a;   /* hover / pressed state */
+  --accent-soft:  #f5ede8;   /* accent tint for backgrounds */
+  --positive:     #4a7c59;
+
+  /* Spacing scale */
+  --space-xs: 0.375rem;
+  --space-sm: 0.75rem;
+  --space-md: 1.25rem;
+  --space-lg: 2rem;
+  --space-xl: 3.5rem;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+}
+
+/* Typography */
+body {
+  font-family: var(--font-body);
+  font-size: clamp(15px, 1.4vw, 17px);
+  line-height: 1.7;
+  color: var(--text-primary);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 400;   /* Instrument Serif reads better at regular weight */
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+/* Claude-like accent rule: use only for interactive/highlighted elements */
+.accent { color: var(--accent); }
+.accent-bg { background: var(--accent-soft); border-left: 3px solid var(--accent); }
+
+/* Surface card — subtle lift, no heavy shadow */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+}
+```
 
 ---
 

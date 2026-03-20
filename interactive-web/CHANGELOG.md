@@ -7,6 +7,15 @@ This project uses [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.1.0] — 2026-03-20
+
+### Added
+
+- **`claude-like` design direction** — 5th aesthetic direction: warm off-white + terracotta coral, Instrument Serif + DM Sans, content-forward with generous whitespace and restrained accent use. Optimised for conversational AI content, reflective essays, and thought leadership.
+- **Live demo** — [alex-huang.dev/skill-lab/interactive-web](https://alex-huang.dev/skill-lab/interactive-web) — inline demo showing `claude-like` output for the "Build your site in one afternoon" article
+
+---
+
 ## [1.0.0] — 2026-03-20
 
 ### Added

@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build Your Site in One Afternoon · AI Workflow Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:            #faf9f7;
+      --surface:       #ffffff;
+      --border:        #e8e4dc;
+      --border-light:  #f0ece4;
+      --text-primary:  #1a1816;
+      --text-muted:    #8b8580;
+      --text-faint:    #b5b0aa;
+      --accent:        #d97757;
+      --accent-deep:   #c9622a;
+      --accent-soft:   #f5ede8;
+      --positive:      #4a7c59;
+      --positive-soft: #edf4ef;
+      --font-display:  'Instrument Serif', Georgia, serif;
+      --font-body:     'DM Sans', system-ui, sans-serif;
+      --font-mono:     'DM Mono', 'Fira Code', monospace;
+      --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
+      --max-w: 680px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body);
+      font-size: clamp(15px, 1.4vw, 16.5px);
+      line-height: 1.7; color: var(--text-primary);
+      background: var(--bg); -webkit-font-smoothing: antialiased;
+    }
+
+    .progress-bar { position: fixed; top: 0; left: 0; right: 0; height: 2px; background: var(--border); z-index: 100; }
+    .progress-fill { height: 100%; background: var(--accent); width: 0; transition: width .2s ease; }
+
+    .page { max-width: var(--max-w); margin: 0 auto; padding: 0 clamp(1.25rem, 6vw, 2.5rem); }
+
+    .hero { padding: 4rem 0 3rem; }
+    .hero-eyebrow {
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 1.25rem; display: block;
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.9rem, 4.5vw, 2.75rem);
+      font-weight: 400; line-height: 1.1; letter-spacing: -.02em;
+      color: var(--text-primary); margin-bottom: 1.25rem;
+    }
+    .hero-title em { font-style: italic; color: var(--accent); }
+    .hero-summary {
+      font-size: 1.05rem; color: var(--text-muted);
+      max-width: 54ch; line-height: 1.65; margin-bottom: 2rem;
+    }
+    .hero-facts {
+      display: flex; flex-wrap: wrap; gap: 1.5rem;
+      font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);
+      padding-top: 1.5rem; border-top: 1px solid var(--border);
+    }
+    .hero-facts span { color: var(--text-primary); font-weight: 500; }
+
+    .phase-nav {
+      display: flex; border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+      margin-bottom: 2.5rem; background: var(--surface);
+    }
+    .phase-btn {
+      flex: 1; border: none; background: none;
+      padding: .9rem .5rem; cursor: pointer;
+      font-family: var(--font-body); font-size: 12px;
+      color: var(--text-muted); transition: all .2s ease;
+      text-align: center; border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; align-items: center; gap: .3rem;
+    }
+    .phase-btn:last-child { border-right: none; }
+    .phase-btn-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 1.5px solid currentColor;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono); font-size: 10px; transition: all .2s ease;
+    }
+    .phase-btn.active { color: var(--accent); background: var(--accent-soft); }
+    .phase-btn.active .phase-btn-num { background: var(--accent); border-color: var(--accent); color: white; }
+    .phase-btn.done { color: var(--positive); }
+    .phase-btn.done .phase-btn-num { background: var(--positive); border-color: var(--positive); color: white; }
+    .phase-btn-label { display: none; font-weight: 500; }
+    @media (min-width: 480px) { .phase-btn-label { display: block; } }
+
+    .phase-panel { display: none; opacity: 0; transform: translateY(8px); transition: opacity .3s ease, transform .3s ease; }
+    .phase-panel.active { display: block; }
+    .phase-panel.visible { opacity: 1; transform: none; }
+
+    .phase-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 1rem; margin-bottom: 2rem;
+      padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);
+    }
+    .phase-tool {
+      font-family: var(--font-mono); font-size: 11px;
+      text-transform: uppercase; letter-spacing: .08em;
+      color: var(--accent); margin-bottom: .5rem; display: block;
+    }
+    .phase-name {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      font-weight: 400; line-height: 1.15;
+    }
+    .phase-time {
+      font-family: var(--font-mono); font-size: 11px;
+      color: var(--text-muted); white-space: nowrap; padding-top: .25rem; flex-shrink: 0;
+    }
+
+    .steps { list-style: none; margin: 0 0 2rem; }
+    .step { display: flex; gap: 1rem; padding: .9rem 0; border-bottom: 1px solid var(--border-light); }
+    .step:last-child { border-bottom: none; }
+    .step-num {
+      width: 24px; height: 24px; flex-shrink: 0; border-radius: 50%;
+      border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); margin-top: .15rem;
+    }
+    .step-text { font-size: .95rem; line-height: 1.65; }
+    .step-text strong { font-weight: 600; }
+    .step-text code {
+      font-family: var(--font-mono); font-size: .85em;
+      background: var(--border-light); padding: .1em .4em; border-radius: 4px;
+    }
+
+    .principle {
+      background: var(--accent-soft); border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 1rem 1.25rem; margin-bottom: 1.5rem;
+      font-size: .9rem; line-height: 1.6;
+    }
+    .principle-label {
+      font-family: var(--font-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: .08em;
+      color: var(--accent); margin-bottom: .35rem; display: block;
+    }
+
+    .pitfall {
+      border: 1px solid #f0c9b8; background: #fff9f7;
+      border-radius: var(--radius-md); padding: 1rem 1.25rem; margin-bottom: 1.5rem;
+    }
+    .pitfall-label {
+      font-family: var(--font-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: .08em; color: var(--accent);
+      margin-bottom: .4rem; display: flex; align-items: center; gap: .4rem;
+    }
+    .pitfall-label::before { content: '⚠'; font-size: 11px; }
+    .pitfall p { font-size: .9rem; line-height: 1.6; }
+    .pitfall p + p { margin-top: .5rem; }
+    .pitfall code {
+      font-family: var(--font-mono); font-size: .85em;
+      background: #f0e8e4; padding: .1em .4em; border-radius: 4px;
+    }
+
+    .phase-controls {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 2rem; border-top: 1px solid var(--border); margin-top: .5rem;
+    }
+    .ctrl-btn {
+      font-family: var(--font-body); font-size: .875rem; font-weight: 500;
+      padding: .6rem 1.25rem; border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border); background: var(--surface);
+      color: var(--text-muted); cursor: pointer; transition: all .2s ease;
+    }
+    .ctrl-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .ctrl-btn:disabled { opacity: .35; cursor: not-allowed; pointer-events: none; }
+    .ctrl-btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    .ctrl-btn.primary:hover { background: var(--accent-deep); border-color: var(--accent-deep); color: white; }
+    .ctrl-count { font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); letter-spacing: .04em; }
+
+    .scope-section { margin: 4rem 0 2rem; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+    .scope-title { font-family: var(--font-display); font-size: 1.4rem; font-weight: 400; margin-bottom: 1.25rem; }
+    .scope-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .scope-card { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.1rem 1.25rem; background: var(--surface); }
+    .scope-card.yes { border-color: #c5dbc9; }
+    .scope-card-label {
+      font-family: var(--font-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: .08em;
+      margin-bottom: .75rem; display: block;
+    }
+    .scope-card.yes .scope-card-label { color: var(--positive); }
+    .scope-card.no  .scope-card-label { color: var(--text-faint); }
+    .scope-items { list-style: none; }
+    .scope-items li {
+      font-size: .875rem; line-height: 1.5; padding: .3rem 0;
+      display: flex; gap: .5rem; align-items: baseline;
+      border-bottom: 1px solid var(--border-light); color: var(--text-muted);
+    }
+    .scope-items li:last-child { border-bottom: none; }
+    .scope-items li::before { flex-shrink: 0; font-size: .75rem; }
+    .scope-card.yes .scope-items li::before { content: '✓'; color: var(--positive); }
+    .scope-card.no  .scope-items li::before { content: '✕'; color: var(--text-faint); }
+
+    .takeaways {
+      margin: 3rem 0 4rem; padding: 2rem;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    }
+    .takeaways-title { font-family: var(--font-display); font-size: 1.2rem; font-weight: 400; margin-bottom: 1.25rem; }
+    .takeaway-list { list-style: none; counter-reset: takeaway; }
+    .takeaway-list li {
+      display: flex; gap: .75rem; align-items: baseline;
+      padding: .7rem 0; border-bottom: 1px solid var(--border-light);
+      font-size: .9rem; line-height: 1.6; counter-increment: takeaway;
+    }
+    .takeaway-list li:last-child { border-bottom: none; }
+    .takeaway-list li::before {
+      content: counter(takeaway);
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--accent); flex-shrink: 0; width: 18px; text-align: right;
+    }
+
+    .footer {
+      border-top: 1px solid var(--border); padding: 1.5rem 0 3rem;
+      font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); letter-spacing: .04em;
+    }
+
+    .reveal { opacity: 0; transform: translateY(12px); transition: opacity .5s ease, transform .5s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 520px) {
+      .scope-grid { grid-template-columns: 1fr; }
+      .phase-controls { flex-wrap: wrap; gap: .75rem; }
+      .ctrl-count { order: -1; width: 100%; text-align: center; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="pbar"></div></div>
+
+<div class="page">
+
+  <header class="hero reveal">
+    <span class="hero-eyebrow">Tutorial · Case Study · 18 min read</span>
+    <h1 class="hero-title">Build your site in <em>one afternoon</em>,<br>using three AI tools</h1>
+    <p class="hero-summary">A proven 4-phase workflow — ChatGPT for requirements, Gemini for code generation, Claude Code for customization, GitHub Pages for deployment. Total cost: $12.</p>
+    <div class="hero-facts">
+      <div>Time&nbsp;&nbsp;<span>4–5 hours</span></div>
+      <div>Cost&nbsp;&nbsp;<span>$12 (domain only)</span></div>
+      <div>Stack&nbsp;&nbsp;<span>Astro · Tailwind · GitHub Pages</span></div>
+      <div>By&nbsp;&nbsp;<span>Alex Huang · March 2026</span></div>
+    </div>
+  </header>
+
+  <nav class="phase-nav reveal" aria-label="Workflow phases">
+    <button class="phase-btn active" onclick="goToPhase(0)" aria-label="Phase 1: Requirements">
+      <span class="phase-btn-num">1</span>
+      <span class="phase-btn-label">Requirements</span>
+    </button>
+    <button class="phase-btn" onclick="goToPhase(1)" aria-label="Phase 2: Prototype">
+      <span class="phase-btn-num">2</span>
+      <span class="phase-btn-label">Prototype</span>
+    </button>
+    <button class="phase-btn" onclick="goToPhase(2)" aria-label="Phase 3: Customize">
+      <span class="phase-btn-num">3</span>
+      <span class="phase-btn-label">Customize</span>
+    </button>
+    <button class="phase-btn" onclick="goToPhase(3)" aria-label="Phase 4: Deploy">
+      <span class="phase-btn-num">4</span>
+      <span class="phase-btn-label">Deploy</span>
+    </button>
+  </nav>
+
+  <!-- Phase 1 -->
+  <section class="phase-panel active" id="phase-0" role="tabpanel">
+    <div class="phase-header">
+      <div>
+        <span class="phase-tool">ChatGPT</span>
+        <h2 class="phase-name">Define your requirements</h2>
+      </div>
+      <div class="phase-time">~30 min</div>
+    </div>
+    <div class="principle">
+      <span class="principle-label">Key principle</span>
+      AI tools don't make decisions for you — they help you turn "vague" into "actionable." Leave this phase with a structured doc you can hand to the next tool.
+    </div>
+    <ol class="steps">
+      <li class="step">
+        <span class="step-num">1</span>
+        <div class="step-text">Open a ChatGPT conversation and describe your rough idea — what the site is for, who it's for, what it needs to do.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">2</span>
+        <div class="step-text">Ask it to turn your idea into <strong>structured requirements</strong> covering four areas: tech stack, page structure, visual direction, and feature list.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">3</span>
+        <div class="step-text">Iterate until everything feels specific. Push back on vague outputs — ambiguity here causes rework in every subsequent phase.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">4</span>
+        <div class="step-text">Save the final doc. This becomes the exact input for Phase 2.</div>
+      </li>
+    </ol>
+    <div class="principle" style="background: var(--positive-soft); border-left-color: var(--positive);">
+      <span class="principle-label" style="color: var(--positive);">Output you should have</span>
+      Chosen stack (Astro + Tailwind recommended), list of pages, visual direction notes, and a feature checklist. Specific enough that a code generator can act on it without asking clarifying questions.
+    </div>
+    <div class="phase-controls">
+      <button class="ctrl-btn" disabled>← Previous</button>
+      <span class="ctrl-count">Phase 1 of 4</span>
+      <button class="ctrl-btn primary" onclick="goToPhase(1)">Prototype →</button>
+    </div>
+  </section>
+
+  <!-- Phase 2 -->
+  <section class="phase-panel" id="phase-1" role="tabpanel">
+    <div class="phase-header">
+      <div>
+        <span class="phase-tool">Google Gemini</span>
+        <h2 class="phase-name">Generate the prototype</h2>
+      </div>
+      <div class="phase-time">30–60 min</div>
+    </div>
+    <div class="principle">
+      <span class="principle-label">Why Gemini here</span>
+      Gemini's strength is long-context code generation — it can output an entire Astro project in one pass. You want a running local codebase at the end of this phase, not a plan.
+    </div>
+    <ol class="steps">
+      <li class="step">
+        <span class="step-num">1</span>
+        <div class="step-text">Paste your requirements doc into Gemini. Ask for a <strong>complete Astro + Tailwind CSS codebase</strong> with all pages included.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">2</span>
+        <div class="step-text">Ask for placeholder content in all pages and a working layout — you'll replace the content in Phase 3.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">3</span>
+        <div class="step-text">Copy the output into a local project folder. Run <code>npm install && npm run dev</code> — it should run immediately.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">4</span>
+        <div class="step-text">Browse the local preview. Note what needs changing. Don't fix anything yet — that's Phase 3.</div>
+      </li>
+    </ol>
+    <div class="pitfall">
+      <span class="pitfall-label">Common pitfall</span>
+      <p><strong>Preview shows the old version.</strong> If <code>npm run preview</code> isn't reflecting changes, you skipped a build step.</p>
+      <p>Always run <code>npm run build</code> before <code>npm run preview</code>. The dev server (<code>npm run dev</code>) auto-rebuilds; preview does not.</p>
+    </div>
+    <div class="phase-controls">
+      <button class="ctrl-btn" onclick="goToPhase(0)">← Requirements</button>
+      <span class="ctrl-count">Phase 2 of 4</span>
+      <button class="ctrl-btn primary" onclick="goToPhase(2)">Customize →</button>
+    </div>
+  </section>
+
+  <!-- Phase 3 -->
+  <section class="phase-panel" id="phase-2" role="tabpanel">
+    <div class="phase-header">
+      <div>
+        <span class="phase-tool">Claude Code</span>
+        <h2 class="phase-name">Customize and personalize</h2>
+      </div>
+      <div class="phase-time">1–2 hours</div>
+    </div>
+    <div class="principle">
+      <span class="principle-label">Why Claude Code here</span>
+      Claude Code has direct local filesystem access — it modifies multiple files simultaneously and handles coordinated changes that would break if done one-at-a-time in a chat interface.
+    </div>
+    <ol class="steps">
+      <li class="step">
+        <span class="step-num">1</span>
+        <div class="step-text">Open your project folder in Claude Code.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">2</span>
+        <div class="step-text"><strong>Blog migration:</strong> if you have existing posts, ask Claude Code to import and convert them in bulk.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">3</span>
+        <div class="step-text"><strong>Animations:</strong> add scroll reveals, hover effects, and page transitions across the project.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">4</span>
+        <div class="step-text">Replace all placeholder content with your real information — bio, projects, resume data.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">5</span>
+        <div class="step-text">Verify with <code>npm run dev</code> before moving to deployment.</div>
+      </li>
+    </ol>
+    <div class="pitfall">
+      <span class="pitfall-label">Common pitfall</span>
+      <p><strong>Downloaded error XML instead of an SVG.</strong> If an externally-hosted icon or image renders broken, check its file size — CDN errors return XML, not binary data.</p>
+      <p>Externally-hosted assets with expiry timestamps will also break after time passes. <strong>Localize everything</strong> into your project's <code>/public</code> folder.</p>
+    </div>
+    <div class="phase-controls">
+      <button class="ctrl-btn" onclick="goToPhase(1)">← Prototype</button>
+      <span class="ctrl-count">Phase 3 of 4</span>
+      <button class="ctrl-btn primary" onclick="goToPhase(3)">Deploy →</button>
+    </div>
+  </section>
+
+  <!-- Phase 4 -->
+  <section class="phase-panel" id="phase-3" role="tabpanel">
+    <div class="phase-header">
+      <div>
+        <span class="phase-tool">GitHub Pages</span>
+        <h2 class="phase-name">Deploy to production</h2>
+      </div>
+      <div class="phase-time">~1 hour</div>
+    </div>
+    <div class="principle">
+      <span class="principle-label">Key principle</span>
+      Budget more time than you expect. The steps are mechanical but the ordering matters — one missed setting breaks the whole pipeline.
+    </div>
+    <ol class="steps">
+      <li class="step">
+        <span class="step-num">1</span>
+        <div class="step-text">Push your code to a GitHub repository.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">2</span>
+        <div class="step-text">Create <code>.github/workflows/deploy.yml</code> — the GitHub Actions workflow that builds and publishes your site on every push.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">3</span>
+        <div class="step-text">In repo Settings → Pages, set <strong>Source to "GitHub Actions"</strong>. This must be done before the first workflow run.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">4</span>
+        <div class="step-text">For a custom domain: add a <code>CNAME</code> file to <code>/public</code> containing your domain name.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">5</span>
+        <div class="step-text">Configure DNS: add 4 A records pointing to GitHub's IP addresses, and a CNAME record for <code>www</code>.</div>
+      </li>
+    </ol>
+    <div class="pitfall">
+      <span class="pitfall-label">Critical pitfall — most common failure</span>
+      <p><strong>Pages Source not set before workflow runs.</strong> The <code>configure-pages</code> action fails if you haven't set Source to "GitHub Actions" first.</p>
+      <p>Settings → Pages → Build and deployment → Source → <strong>"GitHub Actions"</strong>. Do this before triggering any deployment.</p>
+    </div>
+    <div class="pitfall" style="border-color: #c5dbc9; background: var(--positive-soft);">
+      <span class="pitfall-label" style="color: var(--positive);">DNS propagation</span>
+      <p>DNS changes take up to 48 hours to propagate globally. HTTPS certificate provisioning adds another step. Your custom domain won't work immediately after configuration.</p>
+    </div>
+    <div class="phase-controls">
+      <button class="ctrl-btn" onclick="goToPhase(2)">← Customize</button>
+      <span class="ctrl-count">Phase 4 of 4</span>
+      <button class="ctrl-btn primary" id="complete-btn" onclick="showCompletion()">Mark complete ✓</button>
+    </div>
+  </section>
+
+  <!-- Scope -->
+  <div class="scope-section reveal">
+    <h3 class="scope-title">When this approach works</h3>
+    <div class="scope-grid">
+      <div class="scope-card yes">
+        <span class="scope-card-label">Works well for</span>
+        <ul class="scope-items">
+          <li>Static sites, blogs, portfolios</li>
+          <li>No backend or database needed</li>
+          <li>Quick validation of ideas</li>
+          <li>Sites you'll maintain yourself</li>
+        </ul>
+      </div>
+      <div class="scope-card no">
+        <span class="scope-card-label">Not suited for</span>
+        <ul class="scope-items">
+          <li>Dynamic features (user accounts, comments)</li>
+          <li>Completely code-free scenarios</li>
+          <li>Highly custom commercial designs</li>
+          <li>Sites requiring a backend API</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Takeaways -->
+  <div class="takeaways reveal">
+    <h3 class="takeaways-title">Four things to remember</h3>
+    <ol class="takeaway-list">
+      <li>Clear requirements prevent rework — vagueness in Phase 1 costs double the time in Phase 3.</li>
+      <li>Different tools shine at different stages — don't force one tool to do everything.</li>
+      <li>Budget time for deployment — the mechanics are simple but ordering is unforgiving.</li>
+      <li>Ship incomplete work rather than perfecting unreleased versions — a live site at 80% beats a perfect site that never launches.</li>
+    </ol>
+  </div>
+
+  <footer class="footer">alex-huang.dev/posts/ai-website-one-day</footer>
+
+</div>
+
+<script>
+  let current = 0;
+  const done = new Set();
+
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+    document.getElementById('pbar').style.width = Math.min(pct, 100) + '%';
+  }, { passive: true });
+
+  function goToPhase(idx) {
+    const panels = document.querySelectorAll('.phase-panel');
+    const btns   = document.querySelectorAll('.phase-btn');
+    panels[current].classList.remove('visible');
+    setTimeout(() => {
+      panels[current].classList.remove('active');
+      current = idx;
+      panels[current].classList.add('active');
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        panels[current].classList.add('visible');
+      }));
+      document.querySelector('.phase-nav').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 200);
+    btns.forEach((b, i) => {
+      b.classList.remove('active', 'done');
+      if (i === idx) b.classList.add('active');
+      else if (done.has(i)) b.classList.add('done');
+    });
+  }
+
+  function showCompletion() {
+    for (let i = 0; i < 4; i++) done.add(i);
+    document.querySelectorAll('.phase-btn').forEach(b => { b.classList.remove('active'); b.classList.add('done'); });
+    const btn = document.getElementById('complete-btn');
+    btn.textContent = '✓ Complete';
+    btn.style.cssText = 'background: var(--positive); border-color: var(--positive); color: white;';
+    btn.disabled = true;
+    document.querySelector('.takeaways').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  document.querySelectorAll('.reveal').forEach((el, i) => {
+    setTimeout(() => el.classList.add('visible'), 80 + i * 100);
+  });
+  setTimeout(() => document.querySelector('.phase-panel.active').classList.add('visible'), 300);
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

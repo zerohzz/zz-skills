@@ -40,6 +40,14 @@ Character: forward momentum, approachable warmth, milestone satisfaction.
 Font: Newsreader + Nunito. Palette: warm cream + burnt orange.
 Avoids: cold analytical tones, complex visual noise, multi-column density.
 
+### `claude-like`
+For conversational AI content, reflective essays, thought leadership, or anything that benefits from warm intellectual clarity and a reading-first experience.
+
+Character: quiet confidence, warm restraint, generous whitespace, content-forward. No decoration, no noise. The design recedes completely — the reader only notices the content.
+Font: Instrument Serif (display headings, italic accents) + DM Sans (body, UI). Palette: warm off-white + terracotta coral.
+Accent use: sparse and deliberate — the coral accent appears only on genuinely interactive or highlighted elements, never decoratively.
+Avoids: dark themes, cold grays, dense multi-column layouts, heavy shadows, flashy transitions, anything that competes with the text.
+
 ---
 
 ## What to prefer

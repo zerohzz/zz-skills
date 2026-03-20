@@ -114,6 +114,7 @@ Read `references/design-principles.md` for the full system.
 | Tutorial / instructional | Forward momentum, warm neutral, clear milestone hierarchy |
 | Startup / product | Bold, motion-forward, sharp contrast, confident voice |
 | Culture / narrative | Magazine editorial, expressive, bold typographic moments |
+| Conversational / AI / reflective | Warm off-white, terracotta coral accent, humanist sans — quiet and content-forward (`claude-like`) |
 
 Read `assets/component-patterns.md` for ready-to-use CSS/JS components.
 
