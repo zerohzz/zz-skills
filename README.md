@@ -128,13 +128,13 @@ The skill runs a 4-stage analysis pipeline before writing any code:
 
 #### Design Directions
 
-| Direction | Character | Fonts | Palette |
-|-----------|-----------|-------|---------|
-| `dark-technical` | Precision, monospace clarity, analytical depth | IBM Plex Sans + IBM Plex Mono | Dark slate + electric blue |
-| `editorial-ink` | Typographic authority, ink-on-paper weight | Playfair Display + Crimson Pro | Aged paper + editorial red |
-| `clean-analytical` | Tabular precision, high contrast, chart-friendly | Plus Jakarta Sans + Fira Code | Deep slate + cyan or amber |
-| `editorial-warm` | Forward momentum, approachable warmth | Newsreader + Nunito | Warm cream + burnt orange |
-| `claude-like` | Quiet confidence, warm restraint, content-forward | Instrument Serif + DM Sans | Warm off-white + terracotta coral |
+| Direction | Preview | Character | Fonts |
+|-----------|---------|-----------|-------|
+| `dark-technical` | ![dark-technical](demo/gifs/dark-technical.gif) | Precision, monospace clarity, analytical depth | IBM Plex Sans + IBM Plex Mono |
+| `editorial-ink` | ![editorial-ink](demo/gifs/editorial-ink.gif) | Typographic authority, ink-on-paper weight | Playfair Display + Crimson Pro |
+| `clean-analytical` | ![clean-analytical](demo/gifs/clean-analytical.gif) | Tabular precision, high contrast, chart-friendly | Plus Jakarta Sans + Fira Code |
+| `editorial-warm` | ![editorial-warm](demo/gifs/editorial-warm.gif) | Forward momentum, approachable warmth | Newsreader + Nunito |
+| `claude-like` | ![claude-like](demo/gifs/claude-like.gif) | Quiet confidence, warm restraint, content-forward | Instrument Serif + DM Sans |
 
 #### Bundled Styles
 
