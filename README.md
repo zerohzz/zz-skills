@@ -2,6 +2,13 @@
 
 Claude Code skills shared by zerohzz ([alex-huang.dev](https://alex-huang.dev)) — tools for building, recording, and publishing with Claude Code.
 
+## Skills
+
+| Skill | Description |
+|-------|-------------|
+| [interactive-web](#interactive-web) | Transform articles into interactive web experiences |
+| [gif-recorder](#gif-recorder) | Record any website as a polished animated GIF |
+
 ## Prerequisites
 
 - Claude Code installed and running
