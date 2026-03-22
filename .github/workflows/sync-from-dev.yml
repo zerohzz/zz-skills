@@ -39,9 +39,10 @@ jobs:
         run: |
           rsync -a --delete \
             --exclude='.git' \
+            --exclude='.github/' \
             --exclude='sync-public.sh' \
             --exclude='scripts/' \
-            --exclude='README.md' \
+            --exclude='README-DEV.md' \
             --exclude='CLAUDE.md' \
             --exclude='.claude/' \
             /tmp/dev/ ./
