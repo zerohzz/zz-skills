@@ -105,11 +105,23 @@ Interaction steps are defined in a `steps.json` file:
 
 ## Output Sizes
 
-| Ratio | Dimensions | Flag | Best For |
-|-------|-----------|------|----------|
-| 9:16 | 720 × 1280 | `--width 720 --height 1280` | Social media (default) |
-| 16:9 | 1280 × 720 | `--width 1280 --height 720` | Wide presentations |
-| 1:1 | 720 × 720 | `--width 720 --height 720` | Square posts |
+Control the **viewport** (how the page renders) with `--width`/`--height`, and the **GIF output resolution** separately with `--out-width`/`--out-height`. Recording at a high viewport then exporting at a smaller resolution gives sharper rendering without a large file.
+
+| Ratio | Viewport | Output flags | Best For |
+|-------|----------|--------------|----------|
+| 9:16 | `--width 720 --height 1280` | `--out-width 540 --out-height 960` *(default)* | Social media |
+| 16:9 | `--width 1280 --height 720` | `--out-width 960 --out-height 540` | Wide presentations |
+| 1:1 | `--width 720 --height 720` | `--out-width 540 --out-height 540` | Square posts |
+
+### File Size
+
+Use `--max-size` to cap the output. If the GIF exceeds the limit, the recorder automatically downscales the output (up to 3 times, ~30% per step) until it fits:
+
+```bash
+--max-size 5          # cap at 5 MB, auto-downscale if needed
+--max-size 10         # cap at 10 MB
+--max-size unlimited  # no cap (default)
+```
 
 ---
 
@@ -140,10 +152,8 @@ playwright install chromium
 
 ## Known Limitations / Roadmap
 
-1. **Reconstructed HTML fidelity** — pages that rely heavily on JavaScript-rendered content, authentication walls, or web fonts may look different from the live site. Improve by feeding more CSS paths to `web_fetch`.
-2. **GIF file size** — complex pages at 12 fps can exceed 5 MB. Reduce with `--fps 8` or smaller dimensions.
-3. **External asset dependencies** — the reconstructed HTML uses system fonts; brand typefaces loaded from external CDNs won't appear.
-4. **Roadmap**: MP4/WebM export option, browser chrome mockup overlay, multi-page flow support, dark/light theme toggle in the reconstructed HTML.
+1. **Reconstructed HTML fidelity** — pages that rely heavily on JavaScript-rendered content, authentication walls, or complex layout may look different from the live site. Improve by feeding more CSS paths to `web_fetch`.
+2. **Roadmap**: MP4/WebM export option, browser chrome mockup overlay, multi-page flow support, dark/light theme toggle in the reconstructed HTML.
 
 ---
 

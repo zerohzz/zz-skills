@@ -14,22 +14,6 @@ description: >
   with Playwright — so it works entirely within the Claude.ai environment.
 ---
 
-# GIF Recorder
-
-Records any website as a polished animated GIF with smooth cursor movement, click
-highlights, and scroll animation. Works entirely within Claude.ai (no local setup needed).
-
-## How it works
-
-Because Claude.ai's sandbox can't access arbitrary external URLs via bash/Playwright,
-this skill uses a **fetch → reconstruct → serve locally → record** pipeline:
-
-1. `web_fetch` downloads the page content
-2. Claude reconstructs a faithful self-contained HTML with inline CSS
-3. Python HTTP server serves it on `localhost`
-4. Playwright records the interaction against `localhost`
-5. PIL + imageio export a polished GIF
-
 ## Workflow
 
 ### Step 1 — Gather requirements
@@ -52,15 +36,7 @@ Ask the user (if not already provided):
 
 ### Step 2 — Fetch the page
 
-Use `web_fetch` to fetch the URL. Set `html_extraction_method` to `markdown`.
-Also try fetching obvious CSS paths (e.g. `/styles.css`, `/_astro/index.css`) to recover
-real styles. Fetch linked CDN resources if you know their URLs.
-
-Analyze the returned content:
-- Page title and meta info
-- Main sections and content blocks
-- Interactive elements: buttons, tabs, accordions, nav links, forms
-- Visual structure: headers, cards, sidebars
+Use `web_fetch` to fetch the URL. Also fetch obvious CSS paths (e.g. `/styles.css`, `/_astro/index.css`) and any linked CDN resources to recover real styles.
 
 ### Step 3 — Reconstruct self-contained HTML
 
@@ -68,7 +44,7 @@ Build a `index.html` with **all CSS inline** (no external dependencies) that:
 - Faithfully reproduces the page structure and content
 - Uses a dark or light theme that matches the original's aesthetic
 - Includes all interactive elements with working JavaScript
-- Uses system fonts to avoid font-loading issues
+- Includes `<link>` tags for Google Fonts / CDN fonts — Playwright fetches them during recording
 - Sets `cursor: none` on `body` (the recorder draws its own cursor)
 
 Save to `/home/claude/gif_site/index.html` using `bash_tool` or `create_file`.
@@ -109,36 +85,39 @@ Save to `/home/claude/gif_steps.json`.
 
 ### Step 5 — Run the recorder
 
+> **Paths are environment-specific.** Claude.ai sandbox: use `/home/claude/gif_site`, `/mnt/user-data/outputs/demo.gif`. Claude Code / local: use any writable path (e.g. `~/gif_site`, `~/gif_output/demo.gif`).
+
 ```bash
-cd /mnt/skills/user/gif-recorder
-python scripts/recorder.py \
-  --site-dir /home/claude/gif_site \
-  --steps-json /home/claude/gif_steps.json \
-  --output /mnt/user-data/outputs/demo.gif \
+python <skill-dir>/scripts/recorder.py \
+  --site-dir <gif_site_dir> \
+  --steps-json <steps_json_path> \
+  --output <output_path>/demo.gif \
   --width 720 --height 1280 --fps 12 \
-  --cursor highlight
+  --cursor highlight \
+  --click-settle 0.6
 ```
 
-Replace `--cursor highlight` with the mode chosen in Step 1.
+- Replace `--cursor` with the mode chosen in Step 1.
+- Increase `--click-settle` to `0.8`–`1.2` for UIs with heavy JS-driven transitions (e.g. tab switches with `setTimeout` + CSS transition chains).
 
 Aspect ratio variants:
 - 9:16 (social): `--width 720 --height 1280`
 - 16:9 (wide):   `--width 1280 --height 720`
 - 1:1 (square):  `--width 720 --height 720`
 
-### Step 6 — Present and offer refinements
+### Step 6 — Present and refine
 
-Use `present_files` to show the GIF. Then ask:
-- "Does the timing feel right? I can slow down or speed up specific scenes."
-- "Want to adjust which sections are shown?"
-- "Should I add a browser chrome frame around it?"
-
-If the user wants changes, edit `steps.json` or `index.html` and re-run the recorder.
-**Don't start from scratch** — iterate on what's already there.
+Show the GIF. Offer timing, section, and cursor adjustments. Iterate by editing `steps.json` or `index.html` and re-running the recorder — don't rebuild from scratch.
 
 ---
 
 ## Common issues and fixes
+
+**Fonts look wrong / fallback fonts used**
+→ The reconstructed HTML must include `<link rel="stylesheet">` for Google Fonts or other CDN fonts. Playwright fetches CDN resources during recording. Do not replace brand fonts with system fonts.
+
+**Transitions / animations missing or cut off**
+→ Increase `--click-settle` (e.g. `0.8`–`1.2`). Common pattern: `setTimeout(180ms)` + `rAF` + CSS `transition: 250ms` = ~460ms total. The default 0.6s covers most cases; JS-heavy UIs need more.
 
 **Element not found / click misses**
 → Inspect the reconstructed HTML and fix the selector. Use `page.locator("text=Exact Button Text").first` for text-based selectors.

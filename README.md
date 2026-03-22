@@ -7,7 +7,7 @@ Claude Code skills shared by zerohzz ([alex-huang.dev](https://alex-huang.dev)) 
 | Skill | Description |
 |-------|-------------|
 | [interactive-web](#interactive-web) | Transform articles into interactive web experiences |
-| [gif-recorder](#gif-recorder) | Record any website as a polished animated GIF _(WIP)_ |
+| [gif-recorder](#gif-recorder) | Record any website as a polished animated GIF |
 
 ## Prerequisites
 
@@ -193,7 +193,7 @@ Source article: [alex-huang.dev/posts/ai-website-one-day](https://alex-huang.dev
 
 ---
 
-### gif-recorder _(WIP)_
+### gif-recorder
 
 Record any website as a polished animated GIF — ready for README demos, social media, or presentations. Works entirely within Claude Code (no local setup needed): fetches the page, reconstructs it as a self-contained HTML, serves it on localhost, and records with Playwright.
 
@@ -211,6 +211,28 @@ Record any website as a polished animated GIF — ready for README demos, social
 
 ```bash
 /gif-recorder https://example.com
+```
+
+#### Cursor Modes
+
+| Mode | Effect | Best For |
+|------|--------|----------|
+| `default` | Plain white arrow, no effects | Quick recordings, internal demos |
+| `highlight` | Yellow glow halo + click ripple *(default)* | Tutorials, technical demos, product walkthroughs |
+| `minimal` | Faint white halo, almost no effects | Website demos, design-oriented products |
+| `animated` | Blue multi-ring glow + motion trail + click burst | Marketing videos, landing page showcases |
+
+#### Output Control
+
+```bash
+# Viewport vs output resolution (decouple rendering quality from file size)
+--width 720 --height 1280      # Playwright viewport
+--out-width 540 --out-height 960  # GIF output resolution (default)
+
+# File size cap with auto-downscale
+--max-size 5        # cap at 5 MB
+--max-size 10       # cap at 10 MB
+--max-size unlimited  # no cap (default)
 ```
 
 ---
