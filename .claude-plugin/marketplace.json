@@ -15,7 +15,7 @@
       "source": "./",
       "strict": true,
       "skills": [
-        "./interactive-web"
+        "./interactive-web/skill"
       ]
     }
   ]

@@ -1,6 +1,6 @@
 ---
 name: interactive-web
-description: Transform blog posts, essays, technical articles, and long-form written content into polished interactive web experiences. Use this skill whenever a user wants an article, essay, or transcript turned into an interactive webpage, scrollytelling experience, visual concept explorer, timeline, comparison page, architecture explainer, or educational mini-app. Trigger when the user says "make this interactive", "turn my blog into a webpage", "visualize this article", "build an explainer for this", or hands you any substantial written content and implies they want something publishable or shareable. Runs a structured analysis pipeline producing an intermediate blueprint then generates a complete artifact without step-by-step guidance. Also triggers on converting posts to visual, make explorable, build interactive summary, turn into mini-site.
+description: Transform blog posts, essays, technical articles, and long-form written content into polished interactive web experiences. Use this skill whenever a user wants an article, essay, or transcript turned into an interactive webpage, scrollytelling experience, visual concept explorer, timeline, comparison page, architecture explainer, or educational mini-app. Trigger when the user says "make this interactive", "turn my blog into a webpage", "visualize this article", "build an explainer for this", or hands you any substantial written content (article, transcript, framework post, case study) and implies they want something publishable or shareable. This skill is agentic: it runs a structured analysis pipeline, produces an intermediate blueprint, then generates a complete artifact — without requiring step-by-step user guidance. Also trigger for: "convert my post to a visual", "make this explorable", "build an interactive summary", "turn this into a mini-site".
 ---
 
 # Blog → Interactive Web Experience
@@ -98,13 +98,28 @@ Read `references/visualization-patterns.md` for detailed implementation guidance
 
 ## Step 3: Commit to a Design Direction
 
-Before coding, commit to one aesthetic direction and execute it with precision.
+Before coding, commit to one visual style and execute it with precision.
 
 Read `references/design-principles.md` for the full system.
+Read `assets/component-patterns.md` for ready-to-use CSS/JS components and design tokens.
 
 **Core rule:** Every artifact must feel designed for this specific content. Not templated. Not generic.
 
-**Aesthetic matching:**
+### Using bundled styles (`--style` flag)
+
+If the user passed `--style <name>`, that pre-selects **both** the visual identity and the interaction model together. Skip the aesthetic matching table and proceed directly to Step 4 using the bundled style's tokens and layout rules.
+
+| `--style` value | Best for | Interaction model |
+|---|---|---|
+| `story-scrollytelling` | Narrative essays, case studies, long-form arguments, timelines | scroll-journey |
+| `bento-analytical` | Comparisons, tool reviews, framework breakdowns, data-rich content | comparison-matrix |
+| `technical-glow` | Engineering, architecture, system design, code-centric articles | architecture-explainer |
+| `warm-cards` | Tutorials, how-to guides, step-by-step walkthroughs | step-sequencer |
+| `glass-layered` | Concept frameworks, mental models, layered explainers | concept-explorer |
+
+### Legacy aesthetic directions (no `--style` flag)
+
+When no style is specified, match content tone to an aesthetic direction, then apply the interaction model from Step 2:
 
 | Content tone | Direction |
 |---|---|
@@ -115,8 +130,6 @@ Read `references/design-principles.md` for the full system.
 | Startup / product | Bold, motion-forward, sharp contrast, confident voice |
 | Culture / narrative | Magazine editorial, expressive, bold typographic moments |
 | Conversational / AI / reflective | Warm off-white, terracotta coral accent, humanist sans — quiet and content-forward (`claude-like`) |
-
-Read `assets/component-patterns.md` for ready-to-use CSS/JS components.
 
 ---
 
@@ -223,3 +236,4 @@ Produce three outputs:
 - Never reduce a sophisticated article into shallow visual fluff
 - Never use Inter, Roboto, Arial, or System UI fonts
 - Never use purple gradients on white as a default aesthetic
+- Never use `glass-layered` or `technical-glow` with `degrade_to_static: true` content — these styles require structural depth to function
