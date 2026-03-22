@@ -150,6 +150,26 @@ The skill runs a 4-stage analysis pipeline before writing any code:
 | `editorial-warm` | Forward momentum, approachable warmth | Newsreader + Nunito | Warm cream + burnt orange |
 | `claude-like` | Quiet confidence, warm restraint, content-forward | Instrument Serif + DM Sans | Warm off-white + terracotta coral |
 
+#### Bundled Styles
+
+Bundled styles lock in both a visual identity **and** an interaction model together — use `--design` to apply one. The skill picks the best match automatically if you don't specify.
+
+```bash
+/interactive-web posts/my-article.md --design story-scrollytelling
+/interactive-web posts/my-article.md --design bento-analytical
+/interactive-web posts/my-article.md --design technical-glow
+/interactive-web posts/my-article.md --design warm-cards
+/interactive-web posts/my-article.md --design glass-layered
+```
+
+| Style | Best For | Interaction | Fonts |
+|-------|----------|-------------|-------|
+| `story-scrollytelling` | Narrative essays, long-form arguments, case studies | scroll-journey | Cormorant Garamond + Lato |
+| `bento-analytical` | Comparisons, tool reviews, data-rich breakdowns | comparison-matrix | Plus Jakarta Sans + Fira Code |
+| `technical-glow` | Engineering, architecture, system design | architecture-explainer | IBM Plex Sans + IBM Plex Mono |
+| `warm-cards` | Tutorials, how-tos, step-by-step walkthroughs | step-sequencer | Nunito + Fira Code |
+| `glass-layered` | Concept frameworks, mental models, layered explainers | concept-explorer | Space Grotesk + Space Mono |
+
 #### Degradation Logic
 
 - **Upgrade to interactive** when content has explicit phases, comparisons, hierarchies, or data
