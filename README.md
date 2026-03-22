@@ -1,11 +1,11 @@
 # zz-skills
 
-Skills shared by zerohzz ([alex-huang.dev](https://alex-huang.dev)) for transforming written content into interactive web experiences with Claude Code.
+Claude Code skills shared by zerohzz ([alex-huang.dev](https://alex-huang.dev)) — tools for building, recording, and publishing with Claude Code.
 
 ## Prerequisites
 
 - Claude Code installed and running
-- Python 3.10+ (for the analysis pipeline scripts)
+- Python 3.10+ (for skills that use analysis pipeline scripts)
 
 ## Installation
 
@@ -17,49 +17,28 @@ npx skills add zerohzz/zz-skills
 
 ### Register as Plugin Marketplace
 
-Run the following command in Claude Code:
-
 ```bash
 /plugin marketplace add zerohzz/zz-skills
 ```
 
-### Install Skills
-
-**Option 1: Via Browse UI**
-
-1. Select **Browse and install plugins**
-2. Select **zz-skills**
-3. Select the plugin(s) you want to install
-4. Select **Install now**
-
-**Option 2: Direct Install**
+### Install a Specific Skill
 
 ```bash
 /plugin install interactive-web@zz-skills
+/plugin install gif-recorder@zz-skills
 ```
 
-**Option 3: Ask the Agent**
-
-Simply tell Claude Code:
+Or just tell Claude Code:
 
 > Please install Skills from github.com/zerohzz/zz-skills
 
-### Available Plugins
-
-| Plugin | Description | Skills |
-|--------|-------------|--------|
-| **interactive-web** | Transform articles into interactive web experiences | [interactive-web](#interactive-web) |
-
 ## Update Skills
 
-To update skills to the latest version:
-
 1. Run `/plugin` in Claude Code
-2. Switch to **Marketplaces** tab (use arrow keys or Tab)
-3. Select **zz-skills**
-4. Choose **Update marketplace**
+2. Switch to **Marketplaces** tab
+3. Select **zz-skills** → **Update marketplace**
 
-You can also **Enable auto-update** to get the latest versions automatically.
+Enable **auto-update** to always get the latest versions automatically.
 
 ---
 
@@ -190,6 +169,28 @@ A high-quality static editorial page is a better output than hollow interactivit
 - Never uses Inter, Roboto, Arial, or System UI fonts
 - All interactive elements must be keyboard accessible
 - Responsive layout declared for all artifacts
+
+---
+
+### gif-recorder
+
+Record any website as a polished animated GIF — ready for README demos, social media, or presentations. Works entirely within Claude Code (no local setup needed): fetches the page, reconstructs it as a self-contained HTML, serves it on localhost, and records with Playwright.
+
+**Trigger phrases:**
+
+```
+"Record my website as a GIF"
+"Make a demo GIF of my site"
+"Create a screen recording of this URL"
+"Capture a user interaction flow as an animated GIF"
+"Make a social media demo of my website"
+```
+
+**Usage:**
+
+```bash
+/gif-recorder https://example.com
+```
 
 ---
 
