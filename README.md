@@ -7,7 +7,7 @@ Claude Code skills shared by zerohzz ([alex-huang.dev](https://alex-huang.dev)) 
 | Skill | Description |
 |-------|-------------|
 | [interactive-web](#interactive-web) | Transform articles into interactive web experiences |
-| [gif-recorder](#gif-recorder) | Record any website as a polished animated GIF |
+| [gif-recorder](#gif-recorder) | Record any website as a polished animated GIF _(WIP)_ |
 
 ## Prerequisites
 
@@ -193,7 +193,7 @@ Source article: [alex-huang.dev/posts/ai-website-one-day](https://alex-huang.dev
 
 ---
 
-### gif-recorder
+### gif-recorder _(WIP)_
 
 Record any website as a polished animated GIF — ready for README demos, social media, or presentations. Works entirely within Claude Code (no local setup needed): fetches the page, reconstructs it as a self-contained HTML, serves it on localhost, and records with Playwright.
 
