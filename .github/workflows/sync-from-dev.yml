@@ -41,7 +41,7 @@ jobs:
             --exclude='.git' \
             --exclude='.github/' \
             --exclude='sync-public.sh' \
-            --exclude='scripts/' \
+            --exclude='/demo/' \
             --exclude='README-DEV.md' \
             --exclude='CLAUDE.md' \
             --exclude='.claude/' \
