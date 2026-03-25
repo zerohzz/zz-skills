@@ -1,0 +1,114 @@
+/* Clean Modern — minimal, analytical, data-viz friendly */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap');
+
+:root {
+  --accent: #1a56db;
+  --accent-secondary: #1e429f;
+  --text-muted: #9ca3af;
+  --surface-tint: rgba(26, 86, 219, 0.04);
+  --surface-tint-strong: rgba(26, 86, 219, 0.08);
+  --divider: #e5e7eb;
+  --body-bg: #ffffff;
+  --h2-size: 50px;
+  --body-lh: 1.65;
+}
+
+.card-container {
+  background: linear-gradient(145deg, #1a56db 0%, #1e429f 50%, #233876 100%);
+}
+
+.card-inner {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 20px rgba(26,86,219,0.12), 0 1px 4px rgba(0,0,0,0.06);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  color: #111827;
+}
+
+.card-content {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  color: #111827;
+}
+
+.card-content h2 {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.03em;
+  border-bottom: 2px solid #1a56db;
+  padding-bottom: 12px;
+}
+
+.card-content h3 {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-weight: 700;
+  color: #1a56db;
+  letter-spacing: -0.02em;
+}
+
+.card-content p {
+  color: #374151;
+}
+
+.card-content ul,
+.card-content ol {
+  color: #374151;
+}
+
+.card-content li {
+  color: #374151;
+}
+
+.card-content blockquote {
+  border-left-color: #1a56db;
+  background: rgba(26,86,219,0.04);
+  border-radius: 0 8px 8px 0;
+  color: #1e429f;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.card-content pre {
+  background: #f8fafc;
+  color: #1e3a5f;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  border: 1px solid #e5e7eb;
+  border-top: 3px solid #1a56db;
+}
+
+.card-content code {
+  font-family: 'Fira Code', 'Courier New', monospace;
+  background: #eff6ff;
+  color: #1a56db;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 24px;
+}
+
+.cover-inner {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 20px rgba(26,86,219,0.12), 0 1px 4px rgba(0,0,0,0.06);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  color: #111827;
+}
+
+.cover-title {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, #1a56db 0%, #1e429f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cover-subtitle {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  color: #6b7280;
+}
+
+.page-number {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  color: #9ca3af;
+}

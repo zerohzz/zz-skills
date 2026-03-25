@@ -1,0 +1,4 @@
+interface:
+  display_name: "GIF Recorder"
+  short_description: "Record any website as a polished animated GIF"
+  default_prompt: "Record my website as a GIF"

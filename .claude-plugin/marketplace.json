@@ -5,8 +5,8 @@
     "email": "zerohzz@users.noreply.github.com"
   },
   "metadata": {
-    "description": "Claude Code skills by zerohzz — interactive web experiences, GIF recording, social image carousels, and prompt optimization",
-    "version": "1.1.0"
+    "description": "Skills shared by zerohzz for transforming written content into interactive web experiences",
+    "version": "1.0.0"
   },
   "plugins": [
     {
@@ -15,34 +15,16 @@
       "source": "./",
       "strict": true,
       "skills": [
-        "./skills/interactive-web"
-      ]
-    },
-    {
-      "name": "gif-recorder",
-      "description": "Record any website as a polished animated GIF",
-      "source": "./",
-      "strict": true,
-      "skills": [
-        "./skills/gif-recorder"
+        "./interactive-web/skill"
       ]
     },
     {
       "name": "social-image",
-      "description": "Transform articles into multi-slide XHS/Instagram image carousels",
+      "description": "Transform articles into beautiful XHS social media carousels",
       "source": "./",
       "strict": true,
       "skills": [
-        "./skills/social-image"
-      ]
-    },
-    {
-      "name": "write-prompt",
-      "description": "Optimize and refine AI prompts",
-      "source": "./",
-      "strict": true,
-      "skills": [
-        "./skills/write-prompt"
+        "./social-image/skill"
       ]
     }
   ]

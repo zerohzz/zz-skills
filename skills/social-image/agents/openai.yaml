@@ -1,4 +1,0 @@
-interface:
-  display_name: "Social Image"
-  short_description: "Turn articles into XHS image carousels"
-  default_prompt: "Use $social-image to transform this article into a 9-slide Xiaohongshu carousel."

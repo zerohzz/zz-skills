@@ -1,0 +1,116 @@
+/* Sketch — hand-drawn warmth on grid paper */
+/* Fonts: Noto Serif SC (Chinese) + Lora (Latin) for natural CJK/Latin co-rendering */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+
+:root {
+  --accent: #b7472a;
+  --accent-secondary: #2980b9;
+  --text-muted: #8a7e74;
+  --surface-tint: rgba(183, 71, 42, 0.04);
+  --surface-tint-strong: rgba(183, 71, 42, 0.08);
+  --divider: #e0ddd5;
+  --body-bg: #fffef9;
+}
+
+.card-container {
+  background: linear-gradient(145deg, #3d3d3d 0%, #1a1a1a 50%, #2d2d2d 100%);
+}
+
+.card-inner {
+  background: #fffef9;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  border: 3px solid #e0ddd5;
+  box-shadow: 6px 6px 0 rgba(0,0,0,0.15);
+}
+
+.card-inner,
+.card-content {
+  font-family: 'Lora', 'Noto Serif SC', Georgia, serif;
+  color: #2c2c2c;
+}
+
+.card-content h2 {
+  font-family: 'Noto Serif SC', 'Lora', serif;
+  font-weight: 700;
+  color: #c0392b;
+  /* Accent bar — consistent on all h2 headings in sketch theme */
+  border-left: 4px solid #c0392b;
+  padding-left: 14px;
+  border-bottom: none;
+}
+
+.card-content h3 {
+  font-family: 'Noto Serif SC', 'Lora', serif;
+  font-weight: 600;
+  color: #2980b9;
+}
+
+.card-content p {
+  color: #2c2c2c;
+}
+
+.card-content ul,
+.card-content ol {
+  color: #2c2c2c;
+}
+
+.card-content li {
+  color: #2c2c2c;
+}
+
+.card-content blockquote {
+  border-left-color: #f39c12;
+  background: rgba(243,156,18,0.08);
+  border-radius: 0 12px 12px 0;
+  color: #5a4a2a;
+}
+
+.card-content pre {
+  background: #2c2c2c;
+  color: #fffef9;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+}
+
+.card-content code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  background: rgba(44,44,44,0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.cover-container {
+  background: linear-gradient(145deg, #3d3d3d 0%, #1a1a1a 50%, #2d2d2d 100%);
+}
+
+.cover-inner {
+  background: #fffef9;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  border: 3px solid #e0ddd5;
+  box-shadow: 6px 6px 0 rgba(0,0,0,0.15);
+  font-family: 'Lora', 'Noto Serif SC', Georgia, serif;
+  color: #2c2c2c;
+}
+
+.cover-title {
+  font-family: 'Noto Serif SC', 'Lora', serif;
+  font-weight: 700;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  background: none;
+  color: #c0392b;
+}
+
+.cover-subtitle {
+  font-family: 'Lora', 'Noto Serif SC', serif;
+  color: #2c2c2c;
+}
+
+.page-number {
+  font-family: 'Lora', 'Noto Serif SC', serif;
+}

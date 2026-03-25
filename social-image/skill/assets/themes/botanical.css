@@ -1,0 +1,136 @@
+/* Botanical — nature, organic, soft earth tones */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Nunito:wght@400;500;600;700&display=swap');
+
+:root {
+  --accent: #5a8a3c;
+  --accent-secondary: #8fb86b;
+  --text-muted: #8a9e8b;
+  --surface-tint: rgba(90, 138, 60, 0.05);
+  --surface-tint-strong: rgba(90, 138, 60, 0.10);
+  --divider: #d4c9b8;
+  --body-bg: #f8f5ef;
+}
+
+.card-container {
+  background: linear-gradient(145deg, #2d4a2d 0%, #1a3320 50%, #3d5a35 100%);
+}
+
+.card-inner {
+  background: #f8f5ef;
+  border: 1px solid #d4c9b8;
+  box-shadow: 0 6px 28px rgba(45,74,45,0.18);
+  font-family: 'Nunito', sans-serif;
+  color: #2c3e2d;
+}
+
+.card-content {
+  font-family: 'Nunito', sans-serif;
+  color: #2c3e2d;
+}
+
+.card-content h2 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-weight: 400;
+  color: #2d4a2d;
+  letter-spacing: -0.01em;
+  position: relative;
+  padding-bottom: 16px;
+}
+
+.card-content h2::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #5a8a3c, #8fb86b);
+  border-radius: 2px;
+}
+
+.card-content h3 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-weight: 400;
+  font-style: italic;
+  color: #4a6741;
+}
+
+.card-content p {
+  color: #3a4e3b;
+}
+
+.card-content ul {
+  list-style: none;
+  padding-left: 1.2em;
+  color: #3a4e3b;
+}
+
+.card-content ul li::before {
+  content: '✦ ';
+  color: #5a8a3c;
+  font-size: 0.7em;
+  position: relative;
+  top: -2px;
+}
+
+.card-content ol {
+  color: #3a4e3b;
+}
+
+.card-content li {
+  color: #3a4e3b;
+}
+
+.card-content blockquote {
+  border-left-color: #5a8a3c;
+  background: rgba(90,138,60,0.07);
+  border-radius: 0 16px 16px 0;
+  color: #3a5a35;
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-style: italic;
+}
+
+.card-content pre {
+  background: #2c3e2d;
+  color: #c8ddb0;
+  font-family: 'Courier New', monospace;
+  border: 1px solid #4a6741;
+}
+
+.card-content code {
+  font-family: 'Courier New', monospace;
+  background: rgba(90,138,60,0.1);
+  color: #2d4a2d;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.cover-inner {
+  background: #f8f5ef;
+  border: 1px solid #d4c9b8;
+  box-shadow: 0 6px 28px rgba(45,74,45,0.18);
+  font-family: 'Nunito', sans-serif;
+  color: #2c3e2d;
+}
+
+.cover-title {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-weight: 400;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  background: linear-gradient(135deg, #2d4a2d 0%, #5a8a3c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cover-subtitle {
+  font-family: 'Nunito', sans-serif;
+  color: #4a6741;
+}
+
+.page-number {
+  font-family: 'Nunito', sans-serif;
+  color: #8a9e8b;
+}
