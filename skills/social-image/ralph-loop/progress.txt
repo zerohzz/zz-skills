@@ -1,0 +1,6 @@
+# Ralph Visual Quality Loop — Progress Log
+
+> This file is the ONLY memory between iterations. Write useful, specific learnings here.
+> Each iteration agent starts with ZERO context — this file is how you communicate forward.
+
+---
