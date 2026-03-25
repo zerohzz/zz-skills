@@ -1,0 +1,860 @@
+From 80ccaa33243c80ff3489ab6192e289dddc1b208d Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 25 Mar 2026 10:08:16 +0000
+Subject: [PATCH 1/4] feat: add ralph-loop for iterative visual quality
+ improvement
+
+Ralph-loop system that autonomously improves social-image SKILL.md
+by generating slides, scoring them with a blind sub-agent (6 dimensions,
+30/30 to pass), and tracing failures back to skill instructions.
+
+Files:
+- CLAUDE.md: the loop prompt (zero-memory per iteration)
+- ralph.sh: bash loop runner (max 20 iterations)
+- scores.json / progress.txt: inter-iteration state
+
+Placeholders remain for: test article, theme, scoring dimensions.
+
+https://claude.ai/code/session_0144nEEpxNhCZKXrF8XgkWVg
+---
+ skills/social-image/ralph-loop/CLAUDE.md    | 171 ++++++++++++++++++++
+ skills/social-image/ralph-loop/progress.txt |   6 +
+ skills/social-image/ralph-loop/ralph.sh     |  45 ++++++
+ skills/social-image/ralph-loop/scores.json  |   5 +
+ 4 files changed, 227 insertions(+)
+ create mode 100644 skills/social-image/ralph-loop/CLAUDE.md
+ create mode 100644 skills/social-image/ralph-loop/progress.txt
+ create mode 100755 skills/social-image/ralph-loop/ralph.sh
+ create mode 100644 skills/social-image/ralph-loop/scores.json
+
+diff --git a/skills/social-image/ralph-loop/CLAUDE.md b/skills/social-image/ralph-loop/CLAUDE.md
+new file mode 100644
+index 0000000..c0efe6b
+--- /dev/null
++++ b/skills/social-image/ralph-loop/CLAUDE.md
+@@ -0,0 +1,171 @@
++# Ralph Loop — Social Image Visual Quality
++
++You have ZERO memory. Read state from disk before doing anything.
++
++## Goal
++
++Improve `skills/social-image/SKILL.md` until every carousel slide scores **30/30** from a blind reviewer.
++
++---
++
++## Step 0: Load Context
++
++Read these files in order. Do NOT skip any.
++
++1. `skills/social-image/ralph-loop/progress.txt` — learnings from prior iterations
++2. `skills/social-image/ralph-loop/scores.json` — previous scores and feedback
++3. `git log --oneline -15` — what changed recently
++4. `skills/social-image/SKILL.md` — the skill you are improving
++
++Determine your **iteration number** from scores.json (count entries in `iterations` array + 1).
++
++---
++
++## Step 1: Generate HTML
++
++Run the social-image skill to produce HTML slides:
++
++- **Source**: `{{TEST_ARTICLE}}`
++- **Params**: `--ratio 9:16 --theme {{THEME}} --slides {{SLIDES}} --tone {{TONE}}`
++- Follow SKILL.md Steps 0–3. Output HTML to `skills/social-image/slides/`.
++
++---
++
++## Step 2: Fill Check (gate — do not proceed until passed)
++
++For each non-cover slide HTML:
++
++1. Read the file. Calculate: `content_height` = sum of all element heights (h2≈80px, h3≈60px, p≈50px/line, li≈60px, code≈40px/line, blockquote≈80px, visual components by their defined height).
++2. Available height for 9:16 = **1652px** (1920 − 268px padding/chrome).
++3. **Pass condition**: content fills ≥95% of available height. Gap between last element and page-number ≤ 80px.
++4. If fail: add content from source article, add visual fill components, increase typography scale. Re-check.
++5. Repeat until every slide passes. Max 3 inner iterations per slide.
++
++---
++
++## Step 3: Render to PNG
++
++```python
++# Save as /tmp/render_ralph.py and run with python3
++from playwright.sync_api import sync_playwright
++import glob, os
++
++with sync_playwright() as p:
++    browser = p.chromium.launch()
++    page = browser.new_page(viewport={"width": 1080, "height": 1920})
++    os.makedirs("output", exist_ok=True)
++    for f in sorted(glob.glob("skills/social-image/slides/*.html")):
++        page.goto("file://" + os.path.abspath(f))
++        page.wait_for_timeout(1000)
++        page.screenshot(path=f"output/{os.path.splitext(os.path.basename(f))[0]}.png", full_page=False)
++    browser.close()
++```
++
++---
++
++## Step 4: Blind Review (sub-agent)
++
++For **each content slide** PNG (skip cover.png), spawn a **fresh sub-agent** via the Agent tool. The sub-agent receives ONLY the image + this prompt:
++
++```
++You are a blind visual reviewer. You know nothing about this project.
++
++Score this social media slide image on 6 dimensions (1–5 each):
++
++1. **{{DIM_1_NAME}}**: {{DIM_1_DESC}}
++2. **{{DIM_2_NAME}}**: {{DIM_2_DESC}}
++3. **{{DIM_3_NAME}}**: {{DIM_3_DESC}}
++4. **{{DIM_4_NAME}}**: {{DIM_4_DESC}}
++5. **{{DIM_5_NAME}}**: {{DIM_5_DESC}}
++6. **{{DIM_6_NAME}}**: {{DIM_6_DESC}}
++
++Scale: 5=flawless 4=minor nitpick 3=noticeable issue 2=significant problem 1=broken
++Be strict. 5 means zero issues. For any score <5, state the exact problem.
++
++Reply with ONLY this JSON:
++{"d1":N,"d2":N,"d3":N,"d4":N,"d5":N,"d6":N,"total":N,"pass":BOOL,"feedback":["issue"]}
++pass=true only when total==30.
++```
++
++Pass the PNG file path so the agent can read the image.
++
++---
++
++## Step 5: Decide
++
++Take the **minimum total score** across all slides.
++
++- **30/30 on ALL slides** → Step 6
++- **Any slide < 30** → Step 7
++
++---
++
++## Step 6: Ship It
++
++```
++1. Update scores.json: add {"iteration": N, "scores": {...}, "result": "PASS"}
++2. Append to progress.txt:
++   ## Iteration N — PASS ✓ (YYYY-MM-DD)
++   All slides: 30/30
++3. git add skills/social-image/ output/ && git commit -m "ralph: PASS 30/30"
++```
++
++Then output exactly: `<promise>COMPLETE</promise>`
++
++---
++
++## Step 7: Root-Cause Fix (improve the SKILL, not the output)
++
++**Do NOT just patch the current HTML.** Fix the source of truth.
++
++### 7a. Diagnose
++
++Group sub-agent feedback into categories:
++- **Fill**: whitespace, empty gaps, sparse content
++- **Typography**: font size, line height, weight hierarchy
++- **Layout**: alignment, spacing, element distribution
++- **Density**: too little text, shallow content, padding filler
++- **Aesthetics**: color, contrast, visual components
++- **Consistency**: cross-slide style variation
++
++### 7b. Trace to SKILL.md
++
++For each category with issues, find the specific section in SKILL.md that:
++- Gave insufficient instruction (missing rule)
++- Gave wrong instruction (bad default value)
++- Failed to enforce a constraint (no verification step)
++
++### 7c. Edit
++
++Make surgical edits to `skills/social-image/SKILL.md`. Also fix `assets/base.css` or theme CSS if the issue is structural. Each edit must have a clear rationale tied to sub-agent feedback.
++
++### 7d. Record
++
++Append to `progress.txt`:
++```
++## Iteration N — FAIL (YYYY-MM-DD)
++Score: X/30 (worst slide: slide_NN)
++Issues: [category]: [specific feedback]
++Fix: [file]: [what changed] — because [rationale]
++Next iteration should: [actionable advice]
++```
++
++Update `scores.json`:
++```json
++{"iteration": N, "slide_scores": {...}, "worst": X, "result": "FAIL", "changes": ["file:change"]}
++```
++
++Commit: `git add -A && git commit -m "ralph: iter N — X/30, fix [category]"`
++
++Do NOT output `<promise>COMPLETE</promise>`.
++
++---
++
++## Rules
++
++- Sub-agents MUST be fresh (Agent tool, no context reuse)
++- Never skip blind review — no self-scoring
++- Never output `<promise>COMPLETE</promise>` unless every slide is 30/30
++- Always edit SKILL.md — that is the whole point of this loop
++- Always write to progress.txt — it is the next iteration's only memory
++- Never invent article content — only use source material
+diff --git a/skills/social-image/ralph-loop/progress.txt b/skills/social-image/ralph-loop/progress.txt
+new file mode 100644
+index 0000000..4b92208
+--- /dev/null
++++ b/skills/social-image/ralph-loop/progress.txt
+@@ -0,0 +1,6 @@
++# Ralph Visual Quality Loop — Progress Log
++
++> This file is the ONLY memory between iterations. Write useful, specific learnings here.
++> Each iteration agent starts with ZERO context — this file is how you communicate forward.
++
++---
+diff --git a/skills/social-image/ralph-loop/ralph.sh b/skills/social-image/ralph-loop/ralph.sh
+new file mode 100755
+index 0000000..1193b8e
+--- /dev/null
++++ b/skills/social-image/ralph-loop/ralph.sh
+@@ -0,0 +1,45 @@
++#!/usr/bin/env bash
++set -e
++
++SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
++MAX_ITERATIONS=${1:-20}
++SCORES_FILE="$SCRIPT_DIR/scores.json"
++PROGRESS_FILE="$SCRIPT_DIR/progress.txt"
++
++# Initialize scores tracking
++if [ ! -f "$SCORES_FILE" ]; then
++  echo '{"iterations": [], "best_score": 0, "status": "running"}' > "$SCORES_FILE"
++fi
++
++# Initialize progress file
++if [ ! -f "$PROGRESS_FILE" ]; then
++  echo "# Ralph Visual Quality Loop - Progress Log" > "$PROGRESS_FILE"
++  echo "# Started: $(date '+%Y-%m-%d %H:%M:%S')" >> "$PROGRESS_FILE"
++  echo "---" >> "$PROGRESS_FILE"
++fi
++
++echo "=== Ralph Visual Quality Loop ==="
++echo "Max iterations: $MAX_ITERATIONS"
++echo "Prompt: $SCRIPT_DIR/CLAUDE.md"
++echo ""
++
++for i in $(seq 1 "$MAX_ITERATIONS"); do
++  echo "--- Iteration $i / $MAX_ITERATIONS --- $(date '+%H:%M:%S')"
++
++  OUTPUT=$(claude --dangerously-skip-permissions --print < "$SCRIPT_DIR/CLAUDE.md" 2>&1) || true
++
++  echo "$OUTPUT" | tail -5
++
++  if echo "$OUTPUT" | grep -q "<promise>COMPLETE</promise>"; then
++    echo ""
++    echo "=== COMPLETE at iteration $i ==="
++    jq '.status = "complete"' "$SCORES_FILE" > "$SCORES_FILE.tmp" && mv "$SCORES_FILE.tmp" "$SCORES_FILE"
++    exit 0
++  fi
++
++  echo "Score not perfect yet. Continuing..."
++  sleep 2
++done
++
++echo "=== Exhausted $MAX_ITERATIONS iterations without achieving perfect score ==="
++exit 1
+diff --git a/skills/social-image/ralph-loop/scores.json b/skills/social-image/ralph-loop/scores.json
+new file mode 100644
+index 0000000..45d98f1
+--- /dev/null
++++ b/skills/social-image/ralph-loop/scores.json
+@@ -0,0 +1,5 @@
++{
++  "iterations": [],
++  "best_score": 0,
++  "status": "pending"
++}
+-- 
+2.43.0
+
+
+From dba3e0ce1ba3645bd58e10f898f23949f0884488 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 25 Mar 2026 10:10:34 +0000
+Subject: [PATCH 2/4] refine: optimize ralph-loop prompt via write-prompt
+ methodology
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Applied write-prompt refine layers:
+- Layer 1 (Clarity): measurable fill gate (gap ≤80px), explicit element heights
+- Layer 2 (Completeness): structured diagnostic categories for root-cause
+- Layer 3 (Technique): reasoning chain in Step 7 ("think step by step")
+- ~30% shorter than draft while retaining all critical info
+
+https://claude.ai/code/session_0144nEEpxNhCZKXrF8XgkWVg
+---
+ skills/social-image/ralph-loop/CLAUDE.md | 197 ++++++++---------------
+ 1 file changed, 68 insertions(+), 129 deletions(-)
+
+diff --git a/skills/social-image/ralph-loop/CLAUDE.md b/skills/social-image/ralph-loop/CLAUDE.md
+index c0efe6b..abb9b26 100644
+--- a/skills/social-image/ralph-loop/CLAUDE.md
++++ b/skills/social-image/ralph-loop/CLAUDE.md
+@@ -1,171 +1,110 @@
+-# Ralph Loop — Social Image Visual Quality
++# Ralph Loop — Social Image Quality
+ 
+-You have ZERO memory. Read state from disk before doing anything.
++Zero memory per iteration. State lives in `progress.txt`, `scores.json`, and git.
+ 
+-## Goal
++## 0. Orient
+ 
+-Improve `skills/social-image/SKILL.md` until every carousel slide scores **30/30** from a blind reviewer.
+-
+----
+-
+-## Step 0: Load Context
+-
+-Read these files in order. Do NOT skip any.
+-
+-1. `skills/social-image/ralph-loop/progress.txt` — learnings from prior iterations
+-2. `skills/social-image/ralph-loop/scores.json` — previous scores and feedback
+-3. `git log --oneline -15` — what changed recently
+-4. `skills/social-image/SKILL.md` — the skill you are improving
+-
+-Determine your **iteration number** from scores.json (count entries in `iterations` array + 1).
+-
+----
+-
+-## Step 1: Generate HTML
++```
++Read: progress.txt → scores.json → git log --oneline -15 → SKILL.md
++```
+ 
+-Run the social-image skill to produce HTML slides:
++Infer iteration number from `scores.json.iterations.length + 1`.
+ 
+-- **Source**: `{{TEST_ARTICLE}}`
+-- **Params**: `--ratio 9:16 --theme {{THEME}} --slides {{SLIDES}} --tone {{TONE}}`
+-- Follow SKILL.md Steps 0–3. Output HTML to `skills/social-image/slides/`.
++## 1. Generate
+ 
+----
++Run social-image skill (Steps 0–3):
++- Source: `{{TEST_ARTICLE}}`
++- Params: `--ratio 9:16 --theme {{THEME}} --slides {{SLIDES}} --tone {{TONE}}`
++- Output: `skills/social-image/slides/*.html`
+ 
+-## Step 2: Fill Check (gate — do not proceed until passed)
++## 2. Fill Gate
+ 
+-For each non-cover slide HTML:
++Each non-cover slide must pass before proceeding:
+ 
+-1. Read the file. Calculate: `content_height` = sum of all element heights (h2≈80px, h3≈60px, p≈50px/line, li≈60px, code≈40px/line, blockquote≈80px, visual components by their defined height).
+-2. Available height for 9:16 = **1652px** (1920 − 268px padding/chrome).
+-3. **Pass condition**: content fills ≥95% of available height. Gap between last element and page-number ≤ 80px.
+-4. If fail: add content from source article, add visual fill components, increase typography scale. Re-check.
+-5. Repeat until every slide passes. Max 3 inner iterations per slide.
++| Element | Est. height |
++|---------|-------------|
++| h2 | 80px |
++| h3 | 60px |
++| p (per line, ~18 chars) | 50px |
++| li | 60px |
++| code (per line) | 40px |
++| blockquote | 80px |
+ 
+----
++Available = **1652px** (1920 − 268). Pass = gap ≤ 80px from last element to page-number. If fail: add source content, add visual components, scale typography. Max 3 retries per slide.
+ 
+-## Step 3: Render to PNG
++## 3. Render
+ 
+ ```python
+-# Save as /tmp/render_ralph.py and run with python3
+ from playwright.sync_api import sync_playwright
+ import glob, os
+-
+ with sync_playwright() as p:
+-    browser = p.chromium.launch()
+-    page = browser.new_page(viewport={"width": 1080, "height": 1920})
+-    os.makedirs("output", exist_ok=True)
++    b = p.chromium.launch()
++    pg = b.new_page(viewport={"width":1080,"height":1920})
++    os.makedirs("output",exist_ok=True)
+     for f in sorted(glob.glob("skills/social-image/slides/*.html")):
+-        page.goto("file://" + os.path.abspath(f))
+-        page.wait_for_timeout(1000)
+-        page.screenshot(path=f"output/{os.path.splitext(os.path.basename(f))[0]}.png", full_page=False)
+-    browser.close()
+-```
+-
+----
+-
+-## Step 4: Blind Review (sub-agent)
+-
+-For **each content slide** PNG (skip cover.png), spawn a **fresh sub-agent** via the Agent tool. The sub-agent receives ONLY the image + this prompt:
+-
++        pg.goto("file://"+os.path.abspath(f)); pg.wait_for_timeout(1000)
++        pg.screenshot(path=f"output/{os.path.splitext(os.path.basename(f))[0]}.png",full_page=False)
++    b.close()
+ ```
+-You are a blind visual reviewer. You know nothing about this project.
+-
+-Score this social media slide image on 6 dimensions (1–5 each):
+ 
+-1. **{{DIM_1_NAME}}**: {{DIM_1_DESC}}
+-2. **{{DIM_2_NAME}}**: {{DIM_2_DESC}}
+-3. **{{DIM_3_NAME}}**: {{DIM_3_DESC}}
+-4. **{{DIM_4_NAME}}**: {{DIM_4_DESC}}
+-5. **{{DIM_5_NAME}}**: {{DIM_5_DESC}}
+-6. **{{DIM_6_NAME}}**: {{DIM_6_DESC}}
++## 4. Blind Score
+ 
+-Scale: 5=flawless 4=minor nitpick 3=noticeable issue 2=significant problem 1=broken
+-Be strict. 5 means zero issues. For any score <5, state the exact problem.
++Spawn **one Agent per content slide** (skip cover). Sub-agent prompt — copy exactly:
+ 
+-Reply with ONLY this JSON:
+-{"d1":N,"d2":N,"d3":N,"d4":N,"d5":N,"d6":N,"total":N,"pass":BOOL,"feedback":["issue"]}
+-pass=true only when total==30.
+ ```
++Blind visual reviewer. No project context.
+ 
+-Pass the PNG file path so the agent can read the image.
+-
+----
+-
+-## Step 5: Decide
++Score this social media slide (1–5 per dimension, 5=flawless):
+ 
+-Take the **minimum total score** across all slides.
++1. {{DIM_1}}: {{DESC_1}}
++2. {{DIM_2}}: {{DESC_2}}
++3. {{DIM_3}}: {{DESC_3}}
++4. {{DIM_4}}: {{DESC_4}}
++5. {{DIM_5}}: {{DESC_5}}
++6. {{DIM_6}}: {{DESC_6}}
+ 
+-- **30/30 on ALL slides** → Step 6
+-- **Any slide < 30** → Step 7
++5=zero issues. <5=state exact problem.
+ 
+----
+-
+-## Step 6: Ship It
+-
+-```
+-1. Update scores.json: add {"iteration": N, "scores": {...}, "result": "PASS"}
+-2. Append to progress.txt:
+-   ## Iteration N — PASS ✓ (YYYY-MM-DD)
+-   All slides: 30/30
+-3. git add skills/social-image/ output/ && git commit -m "ralph: PASS 30/30"
++JSON only:
++{"d1":N,"d2":N,"d3":N,"d4":N,"d5":N,"d6":N,"total":N,"pass":BOOL,"feedback":["..."]}
++pass=true iff total==30.
+ ```
+ 
+-Then output exactly: `<promise>COMPLETE</promise>`
++## 5. Branch
+ 
+----
++- ALL slides 30/30 → **Step 6**
++- ANY slide <30 → **Step 7**
+ 
+-## Step 7: Root-Cause Fix (improve the SKILL, not the output)
++## 6. Done
+ 
+-**Do NOT just patch the current HTML.** Fix the source of truth.
++Update scores.json, append `## Iter N — PASS` to progress.txt, commit, then:
+ 
+-### 7a. Diagnose
++`<promise>COMPLETE</promise>`
+ 
+-Group sub-agent feedback into categories:
+-- **Fill**: whitespace, empty gaps, sparse content
+-- **Typography**: font size, line height, weight hierarchy
+-- **Layout**: alignment, spacing, element distribution
+-- **Density**: too little text, shallow content, padding filler
+-- **Aesthetics**: color, contrast, visual components
+-- **Consistency**: cross-slide style variation
++## 7. Root-Cause Fix
+ 
+-### 7b. Trace to SKILL.md
++**Do NOT patch HTML. Fix SKILL.md.**
+ 
+-For each category with issues, find the specific section in SKILL.md that:
+-- Gave insufficient instruction (missing rule)
+-- Gave wrong instruction (bad default value)
+-- Failed to enforce a constraint (no verification step)
++Think step by step:
++1. List every feedback item. Group into: Fill | Typography | Layout | Density | Aesthetics | Consistency
++2. For each group, identify the SKILL.md section that should have prevented the issue
++3. Determine: is the rule missing, too weak, or wrong?
++4. Edit `SKILL.md` (and `assets/*.css` if structural). One edit per identified cause.
+ 
+-### 7c. Edit
+-
+-Make surgical edits to `skills/social-image/SKILL.md`. Also fix `assets/base.css` or theme CSS if the issue is structural. Each edit must have a clear rationale tied to sub-agent feedback.
+-
+-### 7d. Record
+-
+-Append to `progress.txt`:
++Record in progress.txt:
+ ```
+-## Iteration N — FAIL (YYYY-MM-DD)
+-Score: X/30 (worst slide: slide_NN)
+-Issues: [category]: [specific feedback]
+-Fix: [file]: [what changed] — because [rationale]
+-Next iteration should: [actionable advice]
++## Iter N — FAIL (YYYY-MM-DD) Score: X/30
++[category]: [feedback] → [file:section]: [edit made] — [why]
++Next iter: [what to watch for]
+ ```
+ 
+-Update `scores.json`:
+-```json
+-{"iteration": N, "slide_scores": {...}, "worst": X, "result": "FAIL", "changes": ["file:change"]}
+-```
+-
+-Commit: `git add -A && git commit -m "ralph: iter N — X/30, fix [category]"`
+-
+-Do NOT output `<promise>COMPLETE</promise>`.
+-
+----
++Update scores.json. Commit. Do NOT output `<promise>COMPLETE</promise>`.
+ 
+ ## Rules
+ 
+-- Sub-agents MUST be fresh (Agent tool, no context reuse)
+-- Never skip blind review — no self-scoring
+-- Never output `<promise>COMPLETE</promise>` unless every slide is 30/30
+-- Always edit SKILL.md — that is the whole point of this loop
+-- Always write to progress.txt — it is the next iteration's only memory
+-- Never invent article content — only use source material
++- Sub-agents: fresh per slide, zero shared context
++- Never self-score. Never skip blind review.
++- `<promise>COMPLETE</promise>` only at 30/30 on every slide
++- Always edit SKILL.md — that is the point
++- Always write progress.txt — it is the next iteration's memory
++- Never invent content — source article only
+-- 
+2.43.0
+
+
+From 6de9ecf0c091eda91812333b0af765c03564c10f Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 25 Mar 2026 10:23:11 +0000
+Subject: [PATCH 3/4] add ralph-loop runner script and state files
+
+- ralph.sh: bash loop that spawns fresh Claude context per iteration
+- progress.txt: cross-iteration memory (append-only)
+- scores.json: structured scoring history
+
+https://claude.ai/code/session_0144nEEpxNhCZKXrF8XgkWVg
+---
+ skills/social-image/ralph-loop/progress.txt |  7 +--
+ skills/social-image/ralph-loop/ralph.sh     | 63 ++++++++++-----------
+ skills/social-image/ralph-loop/scores.json  |  6 +-
+ 3 files changed, 32 insertions(+), 44 deletions(-)
+
+diff --git a/skills/social-image/ralph-loop/progress.txt b/skills/social-image/ralph-loop/progress.txt
+index 4b92208..1163b18 100644
+--- a/skills/social-image/ralph-loop/progress.txt
++++ b/skills/social-image/ralph-loop/progress.txt
+@@ -1,6 +1 @@
+-# Ralph Visual Quality Loop — Progress Log
+-
+-> This file is the ONLY memory between iterations. Write useful, specific learnings here.
+-> Each iteration agent starts with ZERO context — this file is how you communicate forward.
+-
+----
++# Ralph Loop Progress
+diff --git a/skills/social-image/ralph-loop/ralph.sh b/skills/social-image/ralph-loop/ralph.sh
+index 1193b8e..261aea3 100755
+--- a/skills/social-image/ralph-loop/ralph.sh
++++ b/skills/social-image/ralph-loop/ralph.sh
+@@ -1,45 +1,42 @@
+ #!/usr/bin/env bash
+-set -e
+-
+-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+-MAX_ITERATIONS=${1:-20}
+-SCORES_FILE="$SCRIPT_DIR/scores.json"
+-PROGRESS_FILE="$SCRIPT_DIR/progress.txt"
+-
+-# Initialize scores tracking
+-if [ ! -f "$SCORES_FILE" ]; then
+-  echo '{"iterations": [], "best_score": 0, "status": "running"}' > "$SCORES_FILE"
+-fi
+-
+-# Initialize progress file
+-if [ ! -f "$PROGRESS_FILE" ]; then
+-  echo "# Ralph Visual Quality Loop - Progress Log" > "$PROGRESS_FILE"
+-  echo "# Started: $(date '+%Y-%m-%d %H:%M:%S')" >> "$PROGRESS_FILE"
+-  echo "---" >> "$PROGRESS_FILE"
+-fi
+-
+-echo "=== Ralph Visual Quality Loop ==="
+-echo "Max iterations: $MAX_ITERATIONS"
+-echo "Prompt: $SCRIPT_DIR/CLAUDE.md"
+-echo ""
++set -euo pipefail
++
++# Ralph Loop — Social Image Quality
++# Usage: ./ralph.sh [max_iterations]
++
++DIR="$(cd "$(dirname "$0")" && pwd)"
++PROMPT="$DIR/CLAUDE.md"
++MAX_ITERS="${1:-20}"
++PROGRESS="$DIR/progress.txt"
++SCORES="$DIR/scores.json"
+ 
+-for i in $(seq 1 "$MAX_ITERATIONS"); do
+-  echo "--- Iteration $i / $MAX_ITERATIONS --- $(date '+%H:%M:%S')"
++# Init state files if missing
++[[ -f "$PROGRESS" ]] || echo "# Ralph Loop Progress" > "$PROGRESS"
++[[ -f "$SCORES" ]]   || echo '{"iterations":[]}' > "$SCORES"
++
++echo "━━━ Ralph Loop: Social Image Quality ━━━"
++echo "Max iterations: $MAX_ITERS"
++echo "Prompt: $PROMPT"
++echo ""
+ 
+-  OUTPUT=$(claude --dangerously-skip-permissions --print < "$SCRIPT_DIR/CLAUDE.md" 2>&1) || true
++for i in $(seq 1 "$MAX_ITERS"); do
++  echo "━━━ Iteration $i / $MAX_ITERS ━━━"
+ 
+-  echo "$OUTPUT" | tail -5
++  OUTPUT=$(claude --print \
++    --dangerously-skip-permissions \
++    -p "$(cat "$PROMPT")" \
++    2>&1 | tee /dev/stderr) || true
+ 
+-  if echo "$OUTPUT" | grep -q "<promise>COMPLETE</promise>"; then
++  if echo "$OUTPUT" | grep -q '<promise>COMPLETE</promise>'; then
+     echo ""
+-    echo "=== COMPLETE at iteration $i ==="
+-    jq '.status = "complete"' "$SCORES_FILE" > "$SCORES_FILE.tmp" && mv "$SCORES_FILE.tmp" "$SCORES_FILE"
++    echo "✅ Ralph completed at iteration $i"
+     exit 0
+   fi
+ 
+-  echo "Score not perfect yet. Continuing..."
+-  sleep 2
++  echo ""
++  echo "⏳ Not yet complete. Next iteration in 3s..."
++  sleep 3
+ done
+ 
+-echo "=== Exhausted $MAX_ITERATIONS iterations without achieving perfect score ==="
++echo "⚠️  Max iterations ($MAX_ITERS) reached without completion."
+ exit 1
+diff --git a/skills/social-image/ralph-loop/scores.json b/skills/social-image/ralph-loop/scores.json
+index 45d98f1..a2a81b1 100644
+--- a/skills/social-image/ralph-loop/scores.json
++++ b/skills/social-image/ralph-loop/scores.json
+@@ -1,5 +1 @@
+-{
+-  "iterations": [],
+-  "best_score": 0,
+-  "status": "pending"
+-}
++{"iterations":[]}
+-- 
+2.43.0
+
+
+From a6a426f85b875d2f9a3200d52db51f4596df1cf4 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 25 Mar 2026 10:25:23 +0000
+Subject: [PATCH 4/4] populate 6 scoring dimensions with full rubric (60/60
+ scale)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Dimensions: 可读性(10) + 视觉美学(10) + 小红书适配(10) +
+内容结构(10) + 信息完整度(10) + 空白控制(10) = 60
+
+Sub-agent rubric is in Chinese for XHS content evaluation.
+Fill gate updated: blank ≤1% with semantic component table.
+
+https://claude.ai/code/session_0144nEEpxNhCZKXrF8XgkWVg
+---
+ skills/social-image/ralph-loop/CLAUDE.md | 119 ++++++++++++++++-------
+ 1 file changed, 82 insertions(+), 37 deletions(-)
+
+diff --git a/skills/social-image/ralph-loop/CLAUDE.md b/skills/social-image/ralph-loop/CLAUDE.md
+index abb9b26..9a50714 100644
+--- a/skills/social-image/ralph-loop/CLAUDE.md
++++ b/skills/social-image/ralph-loop/CLAUDE.md
+@@ -19,18 +19,21 @@ Run social-image skill (Steps 0–3):
+ 
+ ## 2. Fill Gate
+ 
+-Each non-cover slide must pass before proceeding:
++Each non-cover slide: pure blank area ≤ 1% of page. Available height = **1652px** (1920 − 268).
+ 
+-| Element | Est. height |
+-|---------|-------------|
+-| h2 | 80px |
+-| h3 | 60px |
+-| p (per line, ~18 chars) | 50px |
+-| li | 60px |
+-| code (per line) | 40px |
+-| blockquote | 80px |
++If blank > 1%: match content semantic → add visual fill component from this table:
+ 
+-Available = **1652px** (1920 − 268). Pass = gap ≤ 80px from last element to page-number. If fail: add source content, add visual components, scale typography. Max 3 retries per slide.
++| 内容语义 | 推荐组件 |
++|---------|---------|
++| 步骤/工具/流程 | 流程图、时间轴、漏斗图、甘特图 |
++| 对比/选择/优劣 | VS 对比卡、决策树、对比表格、优劣势色块 |
++| 数字/结论/数据 | 数据高亮块、进度条、饼图/环形图、气泡图 |
++| 定义/概念/理论 | 概念图、公式框、名词解释卡片、Callout 提示框 |
++| 多要素关联 | 维恩图、四象限矩阵、循环图、鱼骨图 |
++| 要点/关键词/总结 | icon 标签云、编号卡片网格、Checklist、标签徽章 |
++| 观点/金句/引用 | Quote 引用块、对话气泡、高亮色块、人物卡片 |
++
++Component must use same theme colors/fonts. Max 3 retries per slide.
+ 
+ ## 3. Render
+ 
+@@ -49,31 +52,73 @@ with sync_playwright() as p:
+ 
+ ## 4. Blind Score
+ 
+-Spawn **one Agent per content slide** (skip cover). Sub-agent prompt — copy exactly:
+-
+-```
+-Blind visual reviewer. No project context.
+-
+-Score this social media slide (1–5 per dimension, 5=flawless):
+-
+-1. {{DIM_1}}: {{DESC_1}}
+-2. {{DIM_2}}: {{DESC_2}}
+-3. {{DIM_3}}: {{DESC_3}}
+-4. {{DIM_4}}: {{DESC_4}}
+-5. {{DIM_5}}: {{DESC_5}}
+-6. {{DIM_6}}: {{DESC_6}}
+-
+-5=zero issues. <5=state exact problem.
+-
+-JSON only:
+-{"d1":N,"d2":N,"d3":N,"d4":N,"d5":N,"d6":N,"total":N,"pass":BOOL,"feedback":["..."]}
+-pass=true iff total==30.
+-```
++Spawn **one Agent per content slide** (skip cover). Each sub-agent receives ONLY the slide screenshot + the rubric below. No project context. No memory.
++
++Sub-agent prompt — copy exactly:
++
++~~~
++你是一个盲审视觉评审员。你对这个项目没有任何上下文。
++请严格按照以下 6 个维度为这张社交媒体幻灯片图片打分。
++
++## 1. 可读性（10 分）
++- 字体大小不小于 28px（手机端阅读友好）
++- 每页文字量控制在 80-150 字之间（信息密度适中，不压迫）
++- 行间距 ≥ 1.6 倍，段间距明显区分
++- 标题与正文有清晰的视觉层级（字号/粗细/颜色至少两项有区别）
++- 文字与背景对比度符合 WCAG AA 标准（对比度 ≥ 4.5:1）
++
++## 2. 视觉美学（10 分）
++- 整体配色不超过 3-4 个主色，风格统一
++- 排版有呼吸感：留白合理但不空洞（正文页内容占比 30%-80%）
++- 元素对齐一致（左对齐或居中，不混用）
++- 页与页之间风格一致（字体、配色、版式统一）
++- 有适当的装饰元素（分隔线、icon、色块）但不喧宾夺主
++
++## 3. 小红书平台适配（10 分）
++- 封面页有吸引力的大标题 + 副标题/hook，能激发点击欲
++- 末页有明确的 CTA（关注/收藏/评论引导）
++- 文案风格口语化、有人感，避免公文/论文腔
++
++## 4. 内容结构（10 分）
++- 封面 → 痛点/hook → 核心内容 → 总结/CTA，逻辑链完整
++- 每页有一个清晰的核心观点（不贪多）
++- 善用编号、分点、对比等结构化表达
++- 关键信息有视觉强调（加粗、高亮色块、放大字号）
++
++## 5. 信息完整度（10 分）
++- 原文核心观点无遗漏
++- 转化过程中没有扭曲原意
++- 适当补充了过渡语让图文版更流畅
++- 信息密度均匀分布，没有某页过载、某页过空
++
++## 6. 空白控制（10 分）
++- 每页非封面页，纯空白区域不得超过页面总面积的 1%
++- 当空白超标时，应根据内容语义自动生成静态前端组件填充
++- 组件须与整页配色、字体保持一致，不喧宾夺主
++- 语义匹配规则：
++  | 内容语义 | 推荐组件 |
++  |---------|---------|
++  | 步骤/工具/流程 | 流程图、时间轴、漏斗图、甘特图 |
++  | 对比/选择/优劣 | VS 对比卡、决策树、对比表格、优劣势色块 |
++  | 数字/结论/数据 | 数据高亮块、进度条、饼图/环形图、气泡图 |
++  | 定义/概念/理论 | 概念图、公式框、名词解释卡片、Callout 提示框 |
++  | 多要素关联 | 维恩图、四象限矩阵、循环图、鱼骨图 |
++  | 要点/关键词/总结 | icon 标签云、编号卡片网格、Checklist、标签徽章 |
++  | 观点/金句/引用 | Quote 引用块、对话气泡、高亮色块、人物卡片 |
++
++---
++
++10 分 = 该维度零问题。<10 分 = 必须说明扣分原因。
++
++仅输出 JSON:
++{"readability":N,"aesthetics":N,"xhs_fit":N,"structure":N,"completeness":N,"whitespace":N,"total":N,"pass":BOOL,"feedback":["扣分原因1","扣分原因2"]}
++pass=true 当且仅当 total==60。
++~~~
+ 
+ ## 5. Branch
+ 
+-- ALL slides 30/30 → **Step 6**
+-- ANY slide <30 → **Step 7**
++- ALL slides 60/60 → **Step 6**
++- ANY slide <60 → **Step 7**
+ 
+ ## 6. Done
+ 
+@@ -86,16 +131,16 @@ Update scores.json, append `## Iter N — PASS` to progress.txt, commit, then:
+ **Do NOT patch HTML. Fix SKILL.md.**
+ 
+ Think step by step:
+-1. List every feedback item. Group into: Fill | Typography | Layout | Density | Aesthetics | Consistency
++1. List every feedback item. Group into: 可读性 | 视觉美学 | 小红书适配 | 内容结构 | 信息完整度 | 空白控制
+ 2. For each group, identify the SKILL.md section that should have prevented the issue
+ 3. Determine: is the rule missing, too weak, or wrong?
+ 4. Edit `SKILL.md` (and `assets/*.css` if structural). One edit per identified cause.
+ 
+ Record in progress.txt:
+ ```
+-## Iter N — FAIL (YYYY-MM-DD) Score: X/30
+-[category]: [feedback] → [file:section]: [edit made] — [why]
+-Next iter: [what to watch for]
++## Iter N — FAIL (YYYY-MM-DD) Score: X/60
++[维度]: [扣分原因] → [file:section]: [修改内容] — [为什么这样改]
++Next iter: [下一轮关注点]
+ ```
+ 
+ Update scores.json. Commit. Do NOT output `<promise>COMPLETE</promise>`.
+@@ -104,7 +149,7 @@ Update scores.json. Commit. Do NOT output `<promise>COMPLETE</promise>`.
+ 
+ - Sub-agents: fresh per slide, zero shared context
+ - Never self-score. Never skip blind review.
+-- `<promise>COMPLETE</promise>` only at 30/30 on every slide
++- `<promise>COMPLETE</promise>` only at 60/60 on every slide
+ - Always edit SKILL.md — that is the point
+ - Always write progress.txt — it is the next iteration's memory
+ - Never invent content — source article only
+-- 
+2.43.0
+

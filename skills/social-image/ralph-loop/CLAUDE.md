@@ -2,6 +2,15 @@
 
 Zero memory per iteration. State lives in `progress.txt`, `scores.json`, and git.
 
+## Agent Model Assignment
+
+| Role | Model | When |
+|------|-------|------|
+| Reflect & iterate SKILL.md | Opus | Step 0, 2, 7 (main agent) |
+| Run test (generate HTML/render) | Sonnet | Step 1, 3 |
+| Blind audit sub-agent | Opus | Step 4 |
+| Record runDoc | Haiku | End of each iteration |
+
 ## 0. Orient
 
 ```
@@ -13,9 +22,11 @@ Infer iteration number from `scores.json.iterations.length + 1`.
 ## 1. Generate
 
 Run social-image skill (Steps 0–3):
-- Source: `{{TEST_ARTICLE}}`
-- Params: `--ratio 9:16 --theme {{THEME}} --slides {{SLIDES}} --tone {{TONE}}`
+- Source: `https://alex-huang.dev/posts/ai-website-one-day-zh/`
+- Params: `--ratio 9:16 --theme claude-like --slides 9 --tone origin`
 - Output: `skills/social-image/slides/*.html`
+
+**Per-iteration isolation**: Copy all HTML to `ralph-loop/runs/iter_{N}/slides/` before rendering. Output images go to `ralph-loop/runs/iter_{N}/output/`. Never overwrite previous iterations.
 
 ## 2. Fill Gate
 
