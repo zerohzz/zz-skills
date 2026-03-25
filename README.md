@@ -8,6 +8,7 @@ Claude Code skills shared by zerohzz ([alex-huang.dev](https://alex-huang.dev)) 
 |-------|-------------|
 | [interactive-web](#interactive-web) | Transform articles into interactive web experiences |
 | [gif-recorder](#gif-recorder) | Record any website as a polished animated GIF |
+| [social-image](#social-image) | Transform articles into multi-slide XHS/Instagram image carousels. Content-intelligent splitting, 8 themes, bilingual support. |
 
 ## Prerequisites
 
@@ -234,6 +235,74 @@ Record any website as a polished animated GIF — ready for README demos, social
 --max-size 10       # cap at 10 MB
 --max-size unlimited  # no cap (default)
 ```
+
+---
+
+### social-image
+
+Transform blog posts, articles, and long-form content into multi-slide XHS (Little Red Book) / Instagram image carousels. The skill analyzes content weight and structure, distributes it across slides intelligently, rewrites copy in a native XHS style, and renders each slide to a high-quality PNG using Playwright.
+
+**Trigger phrases:**
+
+```
+"Turn this article into XHS slides"
+"Make a carousel for this post"
+"Create social media images from this"
+"Convert this to XHS format"
+```
+
+**From a file:**
+
+```bash
+/social-image posts/my-article.md
+```
+
+**From a URL:**
+
+```bash
+/social-image https://example.com/article
+```
+
+**With options:**
+
+```bash
+/social-image posts/my-article.md --theme sketch --slides 9 --ratio 3:4
+/social-image posts/my-article.md --theme editorial --lang zh
+/social-image https://example.com/article --theme claude-like --ratio 9:16
+```
+
+#### Parameters
+
+| Parameter | Default | Options |
+|-----------|---------|---------|
+| `--slides` | 9 | 1–18 |
+| `--ratio` | `3:4` | `3:4` (XHS default), `9:16` (Stories), `1:1` (Feed) |
+| `--theme` | auto | see Themes below |
+| `--lang` | auto-detect | `zh`, `en` |
+
+#### Themes
+
+| Theme | Character |
+|-------|-----------|
+| `sketch` | Hand-drawn ink aesthetic, loose and expressive |
+| `editorial` | Clean editorial layout, typographic authority |
+| `terminal` | Dark monospace, code-terminal energy |
+| `botanical` | Organic greens, nature-inspired softness |
+| `clean-modern` | Minimal white space, contemporary clarity |
+| `warm-paper` | Off-white paper tones, approachable warmth |
+| `neo-brutalism` | Bold borders, high contrast, loud personality |
+| `claude-like` | Quiet confidence, warm restraint, content-forward |
+
+#### Pipeline
+
+| Stage | Script | Output |
+|-------|--------|--------|
+| Plan | `plan_slides.py` | `slide_plan.json` — content analysis and weight-based slide distribution |
+| Render | `render_slides.py` | `slide_XX.png` — Playwright-based HTML-to-PNG per slide |
+
+#### Output
+
+Each run produces a numbered set of PNG files (e.g. `slide_01.png` … `slide_09.png`) ready to upload directly to XHS, Instagram, or any image carousel platform.
 
 ---
 

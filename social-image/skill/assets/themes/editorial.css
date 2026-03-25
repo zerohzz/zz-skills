@@ -1,0 +1,113 @@
+/* Editorial — serif authority, ink on aged paper */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400;1,600&display=swap');
+
+:root {
+  --accent: #8b0000;
+  --accent-secondary: #5a3825;
+  --text-muted: #8b7355;
+  --surface-tint: rgba(139, 0, 0, 0.04);
+  --surface-tint-strong: rgba(139, 0, 0, 0.08);
+  --divider: #e8e0d0;
+  --body-bg: #faf8f2;
+  --h2-size: 52px;
+  --body-size: 34px;
+  --body-lh: 1.8;
+}
+
+.card-container {
+  background: linear-gradient(145deg, #1a1612 0%, #2e2520 100%);
+}
+
+.card-inner {
+  background: #faf8f2;
+  border: 1px solid #e8e0d0;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.8);
+  font-family: 'Crimson Pro', Georgia, serif;
+  color: #1a1612;
+}
+
+.card-content {
+  font-family: 'Crimson Pro', Georgia, serif;
+  color: #1a1612;
+}
+
+.card-content h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  color: #1a1612;
+  border-bottom: 2px solid #8b0000;
+  padding-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.card-content h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 600;
+  color: #2e2520;
+  font-style: italic;
+}
+
+.card-content p {
+  color: #2e2520;
+}
+
+.card-content ul,
+.card-content ol {
+  color: #2e2520;
+}
+
+.card-content li {
+  color: #2e2520;
+}
+
+.card-content blockquote {
+  border-left-color: #8b0000;
+  background: rgba(139,0,0,0.04);
+  color: #3d2b1a;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+}
+
+.card-content pre {
+  background: #1a1612;
+  color: #e8e0d0;
+  font-family: 'Courier New', Courier, monospace;
+  border: 1px solid #3d3228;
+}
+
+.card-content code {
+  font-family: 'Courier New', Courier, monospace;
+  background: rgba(26,22,18,0.08);
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: #8b0000;
+}
+
+.cover-inner {
+  background: #faf8f2;
+  border: 1px solid #e8e0d0;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.8);
+  font-family: 'Crimson Pro', Georgia, serif;
+  color: #1a1612;
+}
+
+.cover-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  background: none;
+  color: #1a1612;
+}
+
+.cover-subtitle {
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-style: italic;
+  color: #3d2b1a;
+}
+
+.page-number {
+  font-family: 'Crimson Pro', Georgia, serif;
+  color: #8b7355;
+}

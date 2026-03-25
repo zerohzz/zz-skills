@@ -17,6 +17,15 @@
       "skills": [
         "./interactive-web/skill"
       ]
+    },
+    {
+      "name": "social-image",
+      "description": "Transform articles into beautiful XHS social media carousels",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./social-image/skill"
+      ]
     }
   ]
 }

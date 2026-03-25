@@ -1,0 +1,112 @@
+/* Claude-like — warm restraint, terracotta, quiet sophistication */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+:root {
+  --accent: #c9622a;
+  --accent-secondary: #8b6b4a;
+  --text-muted: #9a8b7a;
+  --surface-tint: rgba(201, 98, 42, 0.04);
+  --surface-tint-strong: rgba(201, 98, 42, 0.08);
+  --divider: #ede9e3;
+  --body-bg: #faf9f7;
+}
+
+.card-container {
+  background: #faf9f7;
+}
+
+.card-inner {
+  background: #faf9f7;
+  border: none;
+  box-shadow: none;
+  font-family: 'Noto Serif SC', 'Lora', serif;
+  color: #1a1612;
+}
+
+.card-content {
+  font-family: 'Noto Serif SC', 'Lora', serif;
+  color: #1a1612;
+}
+
+.card-content h2 {
+  font-family: 'Noto Serif SC', 'Lora', serif;
+  font-weight: 600;
+  color: #1a1612;
+  letter-spacing: -0.01em;
+  border-bottom: 1px solid #e0d8ce;
+  padding-bottom: 12px;
+}
+
+.card-content h3 {
+  font-family: 'Noto Serif SC', 'Lora', serif;
+  font-weight: 400;
+  font-style: italic;
+  color: #c9622a;
+}
+
+.card-content p {
+  color: #2d2420;
+}
+
+.card-content ul,
+.card-content ol {
+  color: #2d2420;
+}
+
+.card-content li {
+  color: #2d2420;
+}
+
+.card-content blockquote {
+  border-left-color: #d97757;
+  background: rgba(217,119,87,0.06);
+  border-radius: 0 12px 12px 0;
+  color: #7a3e28;
+  font-family: 'Noto Serif SC', 'Lora', serif;
+  font-style: italic;
+}
+
+.card-content pre {
+  background: #1a1612;
+  color: #e8ddd4;
+  font-family: 'Courier New', Courier, monospace;
+  border: 1px solid #3d2d20;
+}
+
+.card-content code {
+  font-family: 'Courier New', Courier, monospace;
+  background: rgba(217,119,87,0.1);
+  color: #c9622a;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 24px;
+}
+
+.cover-inner {
+  background: #faf9f7;
+  border: none;
+  box-shadow: none;
+  font-family: 'Noto Serif SC', 'Lora', serif;
+  color: #1a1612;
+}
+
+.cover-title {
+  font-family: 'Noto Serif SC', 'Lora', serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
+  background: none;
+  color: #c9622a;
+}
+
+.cover-subtitle {
+  font-family: 'Noto Serif SC', 'Lora', serif;
+  color: #7a6658;
+}
+
+.page-number {
+  font-family: 'Noto Serif SC', 'Lora', serif;
+  color: #b8a898;
+}

@@ -1,0 +1,151 @@
+/* Neo-Brutalism — bold, thick borders, hard shadows, high contrast */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root {
+  --accent: #c0392b;
+  --accent-secondary: #e8ff4a;
+  --text-muted: #555555;
+  --surface-tint: rgba(232, 255, 74, 0.15);
+  --surface-tint-strong: rgba(232, 255, 74, 0.30);
+  --divider: #0a0a0a;
+  --body-bg: #e8ff4a;
+  --h2-size: 46px;
+  --body-lh: 1.55;
+}
+
+.card-container {
+  background: #e8ff4a;
+}
+
+.card-inner {
+  background: #ffffff;
+  border: 5px solid #0a0a0a;
+  box-shadow: 12px 12px 0 #0a0a0a;
+  border-radius: 0;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  color: #0a0a0a;
+}
+
+.card-content {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  color: #0a0a0a;
+}
+
+.card-content h2 {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+  color: #0a0a0a;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  background: #e8ff4a;
+  display: inline-block;
+  padding: 4px 12px;
+  margin-left: -12px;
+  margin-bottom: 24px;
+}
+
+.card-content h3 {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+  color: #c0392b;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.card-content p {
+  color: #0a0a0a;
+}
+
+.card-content ul {
+  list-style: none;
+  padding-left: 0.5em;
+  color: #0a0a0a;
+}
+
+.card-content ul li {
+  padding-left: 1em;
+  border-left: 5px solid #e8ff4a;
+}
+
+.card-content ol {
+  color: #0a0a0a;
+}
+
+.card-content li {
+  color: #0a0a0a;
+  font-weight: 500;
+}
+
+.card-content blockquote {
+  border-left: 8px solid #c0392b;
+  background: #e8ff4a;
+  border-radius: 0;
+  color: #0a0a0a;
+  font-style: normal;
+  font-weight: 700;
+  padding: 24px 32px;
+}
+
+.card-content pre {
+  background: #0a0a0a;
+  color: #e8ff4a;
+  font-family: 'Courier New', monospace;
+  border: 4px solid #0a0a0a;
+  border-radius: 0;
+  box-shadow: 6px 6px 0 #c0392b;
+}
+
+.card-content code {
+  font-family: 'Courier New', monospace;
+  background: #e8ff4a;
+  color: #0a0a0a;
+  padding: 2px 6px;
+  border-radius: 0;
+  border: 2px solid #0a0a0a;
+  font-weight: 700;
+}
+
+.cover-container {
+  background: #e8ff4a;
+}
+
+.cover-inner {
+  background: #ffffff;
+  border: 5px solid #0a0a0a;
+  box-shadow: 12px 12px 0 #0a0a0a;
+  border-radius: 0;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  color: #0a0a0a;
+}
+
+.cover-title {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  background: none;
+  color: #0a0a0a;
+}
+
+.cover-subtitle {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 500;
+  color: #0a0a0a;
+  background: #c0392b;
+  color: #ffffff;
+  padding: 8px 20px;
+  display: inline-block;
+}
+
+.page-number {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+  color: #0a0a0a;
+  opacity: 1;
+  background: #e8ff4a;
+  padding: 4px 10px;
+  border: 2px solid #0a0a0a;
+  font-size: 22px;
+}
