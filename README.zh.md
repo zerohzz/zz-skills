@@ -46,7 +46,7 @@ npx skills add zerohzz/zz-skills
 | [interactive-web](#interactive-web) | 将文章转化为互动网页体验 |
 | [gif-recorder](#gif-recorder) | 将任意网站录制为精美的 GIF 动图 |
 | [social-image](#social-image) | 将内容转化为多页小红书/Instagram 图文轮播 |
-| [write-prompt](#write-prompt) | 优化和精炼 AI 提示词 |
+| [write-prompt](#write-prompt) | 基于研究的提示词优化器，支持诊断分析 |
 
 ---
 
@@ -213,17 +213,17 @@ npx skills add zerohzz/zz-skills
 
 ### write-prompt
 
-AI 提示词优化工具，支持三种模式：**optimize**（重构原始提示词）、**refine**（精炼现有提示词）、**plan**（将模糊需求转化为分步指令）。
+基于研究的提示词优化器，内置诊断分析框架。自动识别任务意图与复杂度，选择最佳结构模式（角色系统、任务指令、推理链、少样本、分解式），并应用经过验证的技术模块（思维链、示例、自验证）。三种模式：**optimize**（完整诊断转换）、**refine**（三层手术式改进）、**plan**（将目标分解为可执行的提示词链）。
 
 **使用方法：**
 
 ```bash
 /write-prompt optimize "你的原始提示词"
-/write-prompt refine "你的现有提示词"
-/write-prompt plan "你的模糊需求"
+/write-prompt refine "你的现有结构化提示词"
+/write-prompt plan "你的复杂目标"
 ```
 
-**触发短语：** `"优化提示词"` · `"优化 prompt"` · `"Optimize this prompt"` · `"Improve my prompt"`
+**触发短语：** `"优化提示词"` · `"优化 prompt"` · `"精炼提示词"` · `"Optimize this prompt"` · `"Improve my prompt"`
 
 ---
 
