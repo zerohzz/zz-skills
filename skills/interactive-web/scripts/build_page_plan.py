@@ -93,7 +93,137 @@ DESIGN_SYSTEMS = {
             "positive": "#3d6b3d"
         },
         "theme": "light"
+    },
+    "claude-like": {
+        "font_display": "Instrument Serif",
+        "font_body": "DM Sans",
+        "font_mono": "DM Mono",
+        "font_import": "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap",
+        "palette": {
+            "bg": "#faf9f7",
+            "surface": "#ffffff",
+            "border": "#e8e4dc",
+            "text_primary": "#1a1816",
+            "text_muted": "#8b8580",
+            "accent": "#d97757",
+            "accent_warm": "#c9622a",
+            "positive": "#4a7c59"
+        },
+        "theme": "light"
+    },
+
+    # ─── Bundled styles (layout + visual identity + interaction model) ─────────
+    "story-scrollytelling": {
+        "font_display": "Cormorant Garamond",
+        "font_body": "Lato",
+        "font_mono": "Fira Code",
+        "font_import": "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lato:wght@300;400;700&family=Fira+Code:wght@400&display=swap",
+        "palette": {
+            "bg": "#f9f6f0",
+            "surface": "#ffffff",
+            "border": "#ddd7c8",
+            "text_primary": "#1c1814",
+            "text_muted": "#7a7060",
+            "accent": "#8b4513",
+            "accent_warm": "#c8702a",
+            "positive": "#3a6b44",
+            "chapter_rule": "#c8b89a",
+            "dropcap_bg": "#f0ead8"
+        },
+        "theme": "light"
+    },
+    "bento-analytical": {
+        "font_display": "Plus Jakarta Sans",
+        "font_body": "Plus Jakarta Sans",
+        "font_mono": "Fira Code",
+        "font_import": "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap",
+        "palette": {
+            "bg": "#f4f6f9",
+            "surface": "#ffffff",
+            "border": "#dde2ec",
+            "text_primary": "#111827",
+            "text_muted": "#6b7280",
+            "accent": "#2563eb",
+            "accent_warm": "#f59e0b",
+            "positive": "#16a34a",
+            "surface_alt": "#f8f9fb",
+            "accent_soft": "#eff6ff"
+        },
+        "theme": "light"
+    },
+    "technical-glow": {
+        "font_display": "IBM Plex Sans",
+        "font_body": "IBM Plex Sans",
+        "font_mono": "IBM Plex Mono",
+        "font_import": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap",
+        "palette": {
+            "bg": "#0a0e17",
+            "surface": "#111827",
+            "border": "#1e2d45",
+            "text_primary": "#e2eaf8",
+            "text_muted": "#6b82a8",
+            "accent": "#38bdf8",
+            "accent_warm": "#fb923c",
+            "positive": "#4ade80",
+            "glow_color": "rgba(56,189,248,0.18)",
+            "glow_strong": "rgba(56,189,248,0.35)",
+            "surface_raised": "#161f30",
+            "code_bg": "#0d1420"
+        },
+        "theme": "dark"
+    },
+    "warm-cards": {
+        "font_display": "Nunito",
+        "font_body": "Nunito",
+        "font_mono": "Fira Code",
+        "font_import": "https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Fira+Code:wght@400&display=swap",
+        "palette": {
+            "bg": "#fef9f4",
+            "surface": "#ffffff",
+            "border": "#ead5c4",
+            "text_primary": "#2d1a0e",
+            "text_muted": "#8c6652",
+            "accent": "#e96d2c",
+            "accent_warm": "#f4a62b",
+            "positive": "#3d7a51",
+            "surface_soft": "#fdf3ea",
+            "step_done": "#d4edda",
+            "step_done_border": "#a3cfb4"
+        },
+        "theme": "light"
+    },
+    "glass-layered": {
+        "font_display": "Space Grotesk",
+        "font_body": "Space Grotesk",
+        "font_mono": "Space Mono",
+        "font_import": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap",
+        "palette": {
+            "bg": "#060d1f",
+            "surface": "rgba(255,255,255,0.06)",
+            "surface_strong": "rgba(255,255,255,0.10)",
+            "surface_solid": "#0f1e3d",
+            "border": "rgba(255,255,255,0.12)",
+            "border_strong": "rgba(255,255,255,0.22)",
+            "text_primary": "#eef2ff",
+            "text_muted": "#8896b8",
+            "accent": "#818cf8",
+            "accent_warm": "#f472b6",
+            "positive": "#34d399",
+            "glass_tint": "rgba(129,140,248,0.08)"
+        },
+        "theme": "dark"
     }
+}
+
+
+# ─── Bundled style → preferred interaction model ─────────────────────────────
+
+STYLE_INTERACTION_OVERRIDES = {
+    "story-scrollytelling": "scroll-journey",
+    "bento-analytical":     "comparison-matrix",
+    "technical-glow":       "architecture-explainer",
+    "warm-cards":           "step-sequencer",
+    "glass-layered":        "concept-explorer"
 }
 
 
@@ -206,6 +336,13 @@ def build_blueprint(structure: dict) -> dict:
 
     interaction_model = rec["interaction_model"]
     design_direction = rec["design_direction"]
+
+    # Bundled style overrides both design direction and interaction model
+    selected_style = rec.get("selected_style")
+    if selected_style and selected_style in DESIGN_SYSTEMS:
+        design_direction = selected_style
+        interaction_model = STYLE_INTERACTION_OVERRIDES.get(selected_style, interaction_model)
+
     design_system = DESIGN_SYSTEMS.get(design_direction, DESIGN_SYSTEMS["dark-technical"])
     template = MODEL_PAGE_TEMPLATES.get(interaction_model, MODEL_PAGE_TEMPLATES["scroll-journey"])
     page_sections = build_content_mapping(sections, interaction_model)
@@ -240,6 +377,7 @@ def build_blueprint(structure: dict) -> dict:
         },
         "design": {
             "direction": design_direction,
+            "selected_style": selected_style,
             "theme": design_system["theme"],
             "fonts": {
                 "display": design_system["font_display"],
@@ -285,11 +423,11 @@ def build_blueprint(structure: dict) -> dict:
             f"Use {design_system['font_display']} for headings and display text",
             f"Use {design_system['font_body']} for body copy",
             f"Primary palette: bg={design_system['palette']['bg']}, accent={design_system['palette']['accent']}",
-            f"Interaction model: {rec['interaction_label']} — {rec['reason'][:80]}...",
+            f"Interaction model: {interaction_model} — {rec['reason'][:80]}",
             "All content must be grounded in source article — no invented claims",
             "Page load: staggered reveal animation on all above-fold elements",
-            "Mobile: declare responsive behavior, test at 375px width"
-        ]
+            "Mobile: declare responsive behavior, test at 375px width",
+        ] + ([f"Style mode: {selected_style} — bundled layout philosophy and visual identity"] if selected_style else [])
     }
 
     return blueprint
@@ -310,6 +448,8 @@ def main():
     print(f"\n  {'─'*40}")
     print(f"  Interaction model : {blueprint['interaction']['label']}")
     print(f"  Design direction  : {blueprint['design']['direction']}")
+    if blueprint['design'].get('selected_style'):
+        print(f"  Style mode        : {blueprint['design']['selected_style']}")
     print(f"  Theme             : {blueprint['design']['theme']}")
     print(f"  Font (display)    : {blueprint['design']['fonts']['display']}")
     print(f"  Font (body)       : {blueprint['design']['fonts']['body']}")

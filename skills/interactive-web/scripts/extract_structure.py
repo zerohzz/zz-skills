@@ -122,6 +122,30 @@ DESIGN_DIRECTIONS = {
     "data-driven": "clean-analytical"
 }
 
+# Bundled style directions — map article type to a rendering mode that
+# pre-selects both visual identity and interaction model together.
+# Used when --style auto is passed or when the caller requests style-mode output.
+STYLE_DIRECTIONS = {
+    "tutorial":           "warm-cards",
+    "technical-analysis": "technical-glow",
+    "opinion":            "story-scrollytelling",
+    "tool-review":        "bento-analytical",
+    "case-study":         "story-scrollytelling",
+    "timeline":           "story-scrollytelling",
+    "framework":          "glass-layered",
+    "data-driven":        "bento-analytical"
+}
+
+STYLE_INTERACTION_OVERRIDES = {
+    "story-scrollytelling": "scroll-journey",
+    "bento-analytical":     "comparison-matrix",
+    "technical-glow":       "architecture-explainer",
+    "warm-cards":           "step-sequencer",
+    "glass-layered":        "concept-explorer"
+}
+
+VALID_STYLES = set(STYLE_INTERACTION_OVERRIDES.keys())
+
 
 def classify_article(text: str) -> tuple[str, dict]:
     """Score each article type against signal patterns."""
@@ -259,6 +283,11 @@ def main():
     parser = argparse.ArgumentParser(description='Extract structure from normalized article')
     parser.add_argument('--input', '-i', required=True, help='Normalized markdown or blocks.json')
     parser.add_argument('--output', '-o', default='structure.json', help='Output structure JSON')
+    parser.add_argument(
+        '--style', default=None,
+        help='Visual style override: story-scrollytelling | bento-analytical | '
+             'technical-glow | warm-cards | glass-layered | auto'
+    )
     args = parser.parse_args()
 
     input_path = Path(args.input)
@@ -281,6 +310,24 @@ def main():
     article_type, type_scores = classify_article(full_text)
     interaction_info = INTERACTION_MODELS[article_type]
     design_direction = DESIGN_DIRECTIONS[article_type]
+
+    # Resolve bundled style (--style flag overrides auto-classification)
+    if args.style and args.style != 'auto' and args.style in VALID_STYLES:
+        selected_style = args.style
+    elif args.style == 'auto' or args.style is None:
+        selected_style = STYLE_DIRECTIONS.get(article_type)
+    else:
+        selected_style = None
+
+    # When a bundled style is active, override interaction model
+    if selected_style and selected_style in STYLE_INTERACTION_OVERRIDES:
+        override_model = STYLE_INTERACTION_OVERRIDES[selected_style]
+        interaction_info = {
+            "model": override_model,
+            "label": override_model.replace('-', ' ').title(),
+            "reason": f"Style '{selected_style}' bundles this interaction model as its default."
+        }
+
     thesis = extract_thesis(blocks)
     concepts = extract_concepts(blocks)
     sections = extract_sections(blocks)
@@ -303,6 +350,7 @@ def main():
             "interaction_label": interaction_info["label"],
             "reason": interaction_info["reason"],
             "design_direction": design_direction,
+            "selected_style": selected_style,
             "degrade_to_static": degrade,
             "degrade_reason": degrade_reason
         },
@@ -316,6 +364,8 @@ def main():
     print(f"  Article type: {article_type} (score: {type_scores[article_type]})")
     print(f"  Interaction model: {interaction_info['label']}")
     print(f"  Design direction: {design_direction}")
+    if selected_style:
+        print(f"  Selected style: {selected_style}")
     print(f"  Degrade to static: {degrade}")
     if degrade:
         print(f"  Reason: {degrade_reason}")
