@@ -46,7 +46,7 @@ Enable **auto-update** to always get the latest versions.
 | [interactive-web](#interactive-web) | Transform articles into interactive web experiences |
 | [gif-recorder](#gif-recorder) | Record any website as a polished animated GIF |
 | [social-image](#social-image) | Transform content into multi-slide XHS/Instagram carousels |
-| [write-prompt](#write-prompt) | Optimize and refine AI prompts |
+| [write-prompt](#write-prompt) | Research-backed prompt optimizer with diagnostic analysis |
 
 ---
 
@@ -213,17 +213,17 @@ Transform blog posts and articles into multi-slide XHS (Little Red Book) / Insta
 
 ### write-prompt
 
-Optimize AI prompts with three modes: **optimize** (restructure a raw prompt), **refine** (make an existing prompt more precise), and **plan** (convert a vague request into step-by-step instructions).
+Research-backed prompt optimizer with diagnostic analysis. Classifies intent and complexity, selects the best structural pattern (Role-System, Task-Directive, Reasoning-Chain, Few-Shot, or Decomposed), and applies proven technique modules (Chain-of-Thought, examples, self-verification). Three modes: **optimize** (full diagnostic transformation), **refine** (surgical three-layer improvement), and **plan** (decompose goals into executable prompt chains).
 
 **Usage:**
 
 ```bash
 /write-prompt optimize "your raw prompt here"
-/write-prompt refine "your existing prompt"
-/write-prompt plan "your vague request"
+/write-prompt refine "your existing structured prompt"
+/write-prompt plan "your complex goal"
 ```
 
-**Trigger phrases:** `"Optimize this prompt"` · `"Improve my prompt"` · `"优化提示词"`
+**Trigger phrases:** `"Optimize this prompt"` · `"Improve my prompt"` · `"优化提示词"` · `"Refine this prompt"`
 
 ---
 
