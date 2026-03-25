@@ -1,8 +1,6 @@
 # zz-skills
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
-[中文](README.zh.md)
+[English](README.md) | [中文](README.zh.md)
 
 Claude Code skills shared by [zerohzz](https://alex-huang.dev) — tools for building interactive content, recording demos, generating social images, and optimizing prompts.
 

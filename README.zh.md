@@ -1,10 +1,8 @@
 # zz-skills
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[English](README.md) | [中文](README.zh.md)
 
-[English](README.md)
-
-由 [zerohzz](https://alex-huang.dev) 分享的 Claude Code 技能集 —— 用于构建互动内容、录制演示、生成社交媒体图片和优化提示词。
+由 [zerohzz](https://alex-huang.dev) 分享的 Claude Code 技能集，提升日常工作效率。
 
 ## 安装
 
