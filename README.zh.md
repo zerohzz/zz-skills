@@ -18,13 +18,10 @@ npx skills add zerohzz/zz-skills
 /plugin marketplace add zerohzz/zz-skills
 ```
 
-### 安装单个技能
+### 安装所有技能
 
 ```bash
-/plugin install interactive-web@zz-skills
-/plugin install gif-recorder@zz-skills
-/plugin install social-image@zz-skills
-/plugin install write-prompt@zz-skills
+/plugin install zz-skills@zz-skills
 ```
 
 或者直接告诉 Claude Code：
