@@ -1,19 +1,10 @@
 # zz-skills
 
-Claude Code skills shared by zerohzz ([alex-huang.dev](https://alex-huang.dev)) — tools for building, recording, and publishing with Claude Code.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## Skills
+[中文](README.zh.md)
 
-| Skill | Description |
-|-------|-------------|
-| [interactive-web](#interactive-web) | Transform articles into interactive web experiences |
-| [gif-recorder](#gif-recorder) | Record any website as a polished animated GIF |
-| [social-image](#social-image) | Transform articles into multi-slide XHS/Instagram image carousels. Content-intelligent splitting, 8 themes, bilingual support. |
-
-## Prerequisites
-
-- Claude Code installed and running
-- Python 3.10+ (for skills that use analysis pipeline scripts)
+Claude Code skills shared by [zerohzz](https://alex-huang.dev) — tools for building interactive content, recording demos, generating social images, and optimizing prompts.
 
 ## Installation
 
@@ -34,76 +25,49 @@ npx skills add zerohzz/zz-skills
 ```bash
 /plugin install interactive-web@zz-skills
 /plugin install gif-recorder@zz-skills
+/plugin install social-image@zz-skills
+/plugin install write-prompt@zz-skills
 ```
 
 Or just tell Claude Code:
 
-> Please install Skills from github.com/zerohzz/zz-skills
+> Please install skills from github.com/zerohzz/zz-skills
 
-## Update Skills
+## Update
 
 1. Run `/plugin` in Claude Code
 2. Switch to **Marketplaces** tab
 3. Select **zz-skills** → **Update marketplace**
 
-Enable **auto-update** to always get the latest versions automatically.
+Enable **auto-update** to always get the latest versions.
+
+## Skills
+
+| Skill | Description |
+|-------|-------------|
+| [interactive-web](#interactive-web) | Transform articles into interactive web experiences |
+| [gif-recorder](#gif-recorder) | Record any website as a polished animated GIF |
+| [social-image](#social-image) | Transform content into multi-slide XHS/Instagram carousels |
+| [write-prompt](#write-prompt) | Optimize and refine AI prompts |
 
 ---
 
-## Available Skills
-
 ### interactive-web
 
-Transform blog posts, essays, technical articles, and long-form written content into polished interactive web experiences. This skill is agentic: it runs a structured analysis pipeline, selects the right interaction model, commits to a matching aesthetic direction, and builds a production-quality single-file HTML artifact — without requiring step-by-step guidance.
+Transform blog posts, essays, and technical articles into polished interactive web experiences. Runs a structured analysis pipeline, selects the right interaction model, commits to a matching aesthetic, and builds a production-quality single-file HTML artifact.
 
-**Trigger phrases:**
-
-```
-"Make this interactive"
-"Turn my blog post into a webpage"
-"Build an interactive explainer for this"
-"Visualize this article"
-"Make this explorable"
-"Turn this into a mini-site"
-```
-
-**From a file:**
+**Usage:**
 
 ```bash
 /interactive-web posts/my-article.md
-```
-
-**From a URL:**
-
-```bash
 /interactive-web https://example.com/article
+/interactive-web posts/my-article.md --model step-sequencer --design claude-like
 ```
 
-**Specify interaction model:**
+**Trigger phrases:** `"Make this interactive"` · `"Turn my blog into a webpage"` · `"Visualize this article"` · `"Make this explorable"`
 
-```bash
-/interactive-web posts/my-article.md --model step-sequencer
-/interactive-web posts/my-article.md --model comparison-matrix
-/interactive-web posts/my-article.md --model timeline
-```
-
-**Specify design direction:**
-
-```bash
-/interactive-web posts/my-article.md --design dark-technical
-/interactive-web posts/my-article.md --design editorial-ink
-/interactive-web posts/my-article.md --design claude-like
-```
-
-**Combine both:**
-
-```bash
-/interactive-web posts/my-article.md --model concept-explorer --design clean-analytical
-```
-
-#### Pipeline
-
-The skill runs a 4-stage analysis pipeline before writing any code:
+<details>
+<summary>Pipeline</summary>
 
 | Stage | Script | Input | Output |
 |-------|--------|-------|--------|
@@ -112,7 +76,10 @@ The skill runs a 4-stage analysis pipeline before writing any code:
 | Blueprint | `build_page_plan.py` | `structure.json` | `blueprint.json` |
 | Build | Claude (SKILL.md) | `blueprint.json` + article | Single-file HTML |
 
-#### Interaction Models
+</details>
+
+<details>
+<summary>Interaction Models</summary>
 
 | Pattern | Best For |
 |---------|----------|
@@ -127,86 +94,51 @@ The skill runs a 4-stage analysis pipeline before writing any code:
 | `filterable-gallery` | Pattern libraries, curated examples, reference roundups |
 | `faq-explorer` | Q&A posts, FAQs, question-driven content |
 
-#### Design Directions
+</details>
 
-| Direction | Preview | Character | Fonts |
-|-----------|---------|-----------|-------|
-| `dark-technical` | ![dark-technical](demo/gifs/dark-technical.gif) | Precision, monospace clarity, analytical depth | IBM Plex Sans + IBM Plex Mono |
-| `editorial-ink` | ![editorial-ink](demo/gifs/editorial-ink.gif) | Typographic authority, ink-on-paper weight | Playfair Display + Crimson Pro |
-| `clean-analytical` | ![clean-analytical](demo/gifs/clean-analytical.gif) | Tabular precision, high contrast, chart-friendly | Plus Jakarta Sans + Fira Code |
-| `editorial-warm` | ![editorial-warm](demo/gifs/editorial-warm.gif) | Forward momentum, approachable warmth | Newsreader + Nunito |
-| `claude-like` | ![claude-like](demo/gifs/claude-like.gif) | Quiet confidence, warm restraint, content-forward | Instrument Serif + DM Sans |
+<details>
+<summary>Design Directions</summary>
 
-#### Bundled Styles
+| Direction | Character | Fonts |
+|-----------|-----------|-------|
+| `dark-technical` | Precision, monospace clarity, analytical depth | IBM Plex Sans + IBM Plex Mono |
+| `editorial-ink` | Typographic authority, ink-on-paper weight | Playfair Display + Crimson Pro |
+| `clean-analytical` | Tabular precision, high contrast, chart-friendly | Plus Jakarta Sans + Fira Code |
+| `editorial-warm` | Forward momentum, approachable warmth | Newsreader + Nunito |
+| `claude-like` | Quiet confidence, warm restraint, content-forward | Instrument Serif + DM Sans |
 
-Bundled styles lock in both a visual identity **and** an interaction model together — use `--design` to apply one. The skill picks the best match automatically if you don't specify.
+| Direction | Preview |
+|-----------|---------|
+| `dark-technical` | ![dark-technical](screenshots/dark-technical.gif) |
+| `editorial-ink` | ![editorial-ink](screenshots/editorial-ink.gif) |
+| `clean-analytical` | ![clean-analytical](screenshots/clean-analytical.gif) |
+| `editorial-warm` | ![editorial-warm](screenshots/editorial-warm.gif) |
+| `claude-like` | ![claude-like](screenshots/claude-like.gif) |
 
-```bash
-/interactive-web posts/my-article.md --design story-scrollytelling
-/interactive-web posts/my-article.md --design bento-analytical
-/interactive-web posts/my-article.md --design technical-glow
-/interactive-web posts/my-article.md --design warm-cards
-/interactive-web posts/my-article.md --design glass-layered
-```
+</details>
+
+<details>
+<summary>Bundled Styles</summary>
+
+Bundled styles lock in both a visual identity **and** an interaction model together.
 
 | Style | Best For | Interaction | Fonts |
 |-------|----------|-------------|-------|
-| `story-scrollytelling` | Narrative essays, long-form arguments, case studies | scroll-journey | Cormorant Garamond + Lato |
+| `story-scrollytelling` | Narrative essays, long-form arguments | scroll-journey | Cormorant Garamond + Lato |
 | `bento-analytical` | Comparisons, tool reviews, data-rich breakdowns | comparison-matrix | Plus Jakarta Sans + Fira Code |
 | `technical-glow` | Engineering, architecture, system design | architecture-explainer | IBM Plex Sans + IBM Plex Mono |
 | `warm-cards` | Tutorials, how-tos, step-by-step walkthroughs | step-sequencer | Nunito + Fira Code |
-| `glass-layered` | Concept frameworks, mental models, layered explainers | concept-explorer | Space Grotesk + Space Mono |
+| `glass-layered` | Concept frameworks, mental models | concept-explorer | Space Grotesk + Space Mono |
 
-#### Degradation Logic
+</details>
 
-- **Upgrade to interactive** when content has explicit phases, comparisons, hierarchies, or data
-- **Degrade to static editorial** when content is a short opinion or single argument with no navigable structure
-
-A high-quality static editorial page is a better output than hollow interactivity.
-
-#### Output
-
-1. **Artifact rationale** (3 sentences) — chosen model, design direction, and what interactivity adds
-2. **The interactive webpage** — single self-contained `.html` file, open directly in any browser
-3. **Reuse notes** — what to swap to adapt this to another article
-
-#### Non-Negotiables
-
-- Never copies paragraphs verbatim — extracts and rebuilds content into interactive treatments
-- Never invents sections not in the source article
-- Never uses Inter, Roboto, Arial, or System UI fonts
-- All interactive elements must be keyboard accessible
-- Responsive layout declared for all artifacts
-
-#### Demo
-
-**Skill Lab page:** [alex-huang.dev/skill-lab/interactive-web](https://alex-huang.dev/skill-lab/interactive-web)
-
-**Live output example** — generated by running:
-
-```bash
-/interactive-web https://alex-huang.dev/posts/ai-website-one-day/ --design claude-like
-```
-
-→ [alex-huang.dev/skill-lab/interactive-web-demo.html](https://alex-huang.dev/skill-lab/interactive-web-demo.html)
-
-Source article: [alex-huang.dev/posts/ai-website-one-day](https://alex-huang.dev/posts/ai-website-one-day/)
+**Demo:** [alex-huang.dev/skill-lab/interactive-web](https://alex-huang.dev/skill-lab/interactive-web)
 
 ---
 
 ### gif-recorder
 
-Record any website as a polished animated GIF — ready for README demos, social media, or presentations. Works entirely within Claude Code (no local setup needed): fetches the page, reconstructs it as a self-contained HTML, serves it on localhost, and records with Playwright.
-
-**Trigger phrases:**
-
-```
-"Record my website as a GIF"
-"Make a demo GIF of my site"
-"Create a screen recording of this URL"
-"Capture a user interaction flow as an animated GIF"
-"Make a social media demo of my website"
-```
+Record any website as a polished animated GIF — ready for README demos, social media, or presentations. Works entirely within Claude Code: fetches the page, reconstructs it as self-contained HTML, serves it on localhost, and records with Playwright.
 
 **Usage:**
 
@@ -214,101 +146,97 @@ Record any website as a polished animated GIF — ready for README demos, social
 /gif-recorder https://example.com
 ```
 
-#### Cursor Modes
+**Trigger phrases:** `"Record my website as a GIF"` · `"Make a demo GIF"` · `"Create a screen recording of this URL"`
+
+<details>
+<summary>Options</summary>
+
+**Cursor Modes:**
 
 | Mode | Effect | Best For |
 |------|--------|----------|
-| `default` | Plain white arrow, no effects | Quick recordings, internal demos |
-| `highlight` | Yellow glow halo + click ripple *(default)* | Tutorials, technical demos, product walkthroughs |
-| `minimal` | Faint white halo, almost no effects | Website demos, design-oriented products |
-| `animated` | Blue multi-ring glow + motion trail + click burst | Marketing videos, landing page showcases |
+| `default` | Plain white arrow | Quick recordings, internal demos |
+| `highlight` | Yellow glow + click ripple *(default)* | Tutorials, product walkthroughs |
+| `minimal` | Faint white halo | Website demos, design products |
+| `animated` | Blue multi-ring glow + motion trail | Marketing videos, landing pages |
 
-#### Output Control
+**Output Control:**
 
 ```bash
-# Viewport vs output resolution (decouple rendering quality from file size)
---width 720 --height 1280      # Playwright viewport
---out-width 540 --out-height 960  # GIF output resolution (default)
-
-# File size cap with auto-downscale
---max-size 5        # cap at 5 MB
---max-size 10       # cap at 10 MB
---max-size unlimited  # no cap (default)
+--width 720 --height 1280        # Playwright viewport
+--out-width 540 --out-height 960 # GIF output resolution
+--max-size 5                     # Cap at 5 MB
 ```
+
+</details>
 
 ---
 
 ### social-image
 
-Transform blog posts, articles, and long-form content into multi-slide XHS (Little Red Book) / Instagram image carousels. The skill analyzes content weight and structure, distributes it across slides intelligently, rewrites copy in a native XHS style, and renders each slide to a high-quality PNG using Playwright.
+Transform blog posts and articles into multi-slide XHS (Little Red Book) / Instagram image carousels. Analyzes content weight, distributes across slides intelligently, rewrites copy in native XHS style, and renders each slide to PNG via Playwright.
 
-**Trigger phrases:**
-
-```
-"Turn this article into XHS slides"
-"Make a carousel for this post"
-"Create social media images from this"
-"Convert this to XHS format"
-```
-
-**From a file:**
+**Usage:**
 
 ```bash
 /social-image posts/my-article.md
-```
-
-**From a URL:**
-
-```bash
 /social-image https://example.com/article
-```
-
-**With options:**
-
-```bash
 /social-image posts/my-article.md --theme sketch --slides 9 --ratio 3:4
-/social-image posts/my-article.md --theme editorial --lang zh
-/social-image https://example.com/article --theme claude-like --ratio 9:16
 ```
 
-#### Parameters
+**Trigger phrases:** `"Turn this into XHS slides"` · `"Make a carousel"` · `"Create social media images"`
+
+<details>
+<summary>Options</summary>
 
 | Parameter | Default | Options |
 |-----------|---------|---------|
 | `--slides` | 9 | 1–18 |
-| `--ratio` | `3:4` | `3:4` (XHS default), `9:16` (Stories), `1:1` (Feed) |
-| `--theme` | auto | see Themes below |
+| `--ratio` | `3:4` | `3:4` (XHS), `9:16` (Stories), `1:1` (Feed) |
+| `--theme` | auto | See below |
 | `--lang` | auto-detect | `zh`, `en` |
 
-#### Themes
+**Themes:**
 
 | Theme | Character |
 |-------|-----------|
-| `sketch` | Hand-drawn ink aesthetic, loose and expressive |
-| `editorial` | Clean editorial layout, typographic authority |
+| `sketch` | Hand-drawn ink, loose and expressive |
+| `editorial` | Clean layout, typographic authority |
 | `terminal` | Dark monospace, code-terminal energy |
 | `botanical` | Organic greens, nature-inspired softness |
 | `clean-modern` | Minimal white space, contemporary clarity |
 | `warm-paper` | Off-white paper tones, approachable warmth |
 | `neo-brutalism` | Bold borders, high contrast, loud personality |
-| `claude-like` | Quiet confidence, warm restraint, content-forward |
+| `claude-like` | Quiet confidence, warm restraint |
 
-#### Pipeline
-
-| Stage | Script | Output |
-|-------|--------|--------|
-| Plan | `plan_slides.py` | `slide_plan.json` — content analysis and weight-based slide distribution |
-| Render | `render_slides.py` | `slide_XX.png` — Playwright-based HTML-to-PNG per slide |
-
-#### Output
-
-Each run produces a numbered set of PNG files (e.g. `slide_01.png` … `slide_09.png`) ready to upload directly to XHS, Instagram, or any image carousel platform.
+</details>
 
 ---
 
+### write-prompt
+
+Optimize AI prompts with three modes: **optimize** (restructure a raw prompt), **refine** (make an existing prompt more precise), and **plan** (convert a vague request into step-by-step instructions).
+
+**Usage:**
+
+```bash
+/write-prompt optimize "your raw prompt here"
+/write-prompt refine "your existing prompt"
+/write-prompt plan "your vague request"
+```
+
+**Trigger phrases:** `"Optimize this prompt"` · `"Improve my prompt"` · `"优化提示词"`
+
+---
+
+## Prerequisites
+
+- Claude Code installed and running
+- Python 3.10+ (for `interactive-web` and `social-image` pipeline scripts)
+
 ## License
 
-MIT
+[MIT](LICENSE)
 
 ## Star History
 

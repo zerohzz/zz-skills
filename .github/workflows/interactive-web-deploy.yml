@@ -1,21 +1,11 @@
-# ─────────────────────────────────────────────────────────────────────────────
-# USAGE: Copy this file to .github/workflows/interactive-web-deploy.yml
-#        in the ROOT of your zz-skills repository clone.
-#
-# This workflow deploys interactive-web/demo/ to GitHub Pages whenever
-# files under interactive-web/ change on the main branch.
-#
-# After pushing, go to: Settings → Pages → Source → GitHub Actions
-# Your site will be live at:
-#   https://zerohzz.github.io/zz-skills/interactive-web/demo/
-# ─────────────────────────────────────────────────────────────────────────────
+# Deploy interactive-web demo to GitHub Pages when skill files change
 name: Deploy interactive-web demo
 
 on:
   push:
     branches: [main]
     paths:
-      - 'interactive-web/**'
+      - 'skills/interactive-web/**'
   workflow_dispatch:
 
 permissions:
@@ -44,10 +34,7 @@ jobs:
       - name: Upload demo artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Deploy the full interactive-web directory so that:
-          # - demo/index.html is accessible at /interactive-web/demo/
-          # - examples/ iframe src="../examples/..." resolves correctly
-          path: interactive-web
+          path: skills/interactive-web
 
       - name: Deploy to GitHub Pages
         id: deployment
