@@ -205,9 +205,15 @@ Use `{SKILL_DIR}/assets/cover.html` as your starting template. Replace these pla
 |---|---|
 | `{{THEME}}` | theme name from config |
 | `{{FONT_URL}}` | Google Fonts URL for the theme (see table below) |
-| `{{EMOJI}}` | `cover.emoji` from slide_plan.json |
+| `{{RATIO_CLASS}}` | `ratio-3-4`, `ratio-9-16`, or `ratio-1-1` based on config.ratio |
+| `{{TONE}}` | `config.content_tone` from slide_plan.json (empty string if `default`) |
+| `{{REF}}` | Category breadcrumb — infer from content: e.g. `REF — 思维 / 第一性原理`. Format: `REF — domain / topic`. If no clear category, leave empty. |
+| `{{SOURCE}}` | Source title in uppercase: e.g. `THE BOOK OF ELON · 1/3`. Use article source if known, or the article title abbreviated + slide count. |
 | `{{TITLE}}` | `cover.title` from slide_plan.json |
 | `{{SUBTITLE}}` | `cover.subtitle` from slide_plan.json |
+| `{{AUTHOR}}` | `config.author` from slide_plan.json (empty if not set) |
+
+**Cover layout:** The cover is now left-aligned (not centered), with a REF breadcrumb at top, source line, large title (84px), subtitle, and optional author footer at bottom. This follows the ljg-card reading card pattern for a more authoritative, magazine-like feel.
 
 ### Content slides (type: "content")
 
@@ -217,11 +223,15 @@ Use `{SKILL_DIR}/assets/card.html` as your starting template. Replace these plac
 |---|---|
 | `{{THEME}}` | theme name from config |
 | `{{FONT_URL}}` | Google Fonts URL for the theme |
-| `{{CONTENT}}` | HTML rendered from the slide's `blocks` array |
+| `{{RATIO_CLASS}}` | `ratio-3-4`, `ratio-9-16`, or `ratio-1-1` based on config.ratio |
+| `{{TONE}}` | `config.content_tone` from slide_plan.json (empty string if `default`) |
+| `{{CONTENT}}` | HTML rendered from the slide's `blocks` array (including semantic blocks) |
 | `{{PAGE}}` | `slide_number - 1` (content slide index, 1-based) |
 | `{{TOTAL}}` | `total_slides - 1` (total content slides) |
 
 ### Block rendering rules
+
+**Standard blocks:**
 
 | Block type | HTML output |
 |---|---|
@@ -232,6 +242,46 @@ Use `{SKILL_DIR}/assets/card.html` as your starting template. Replace these plac
 | `list` ordered | `<ol><li>item</li>...</ol>` |
 | `code` | `<pre><code class="lang-{lang}">text</code></pre>` |
 | `quote` | `<blockquote><p>text</p></blockquote>` |
+
+**Semantic blocks** (detected by `plan_slides.py` from content patterns):
+
+| Block type | HTML output |
+|---|---|
+| `comparison` | `<div class="comparison"><div class="comparison-card"><div class="comparison-label">left_label</div><div class="comparison-title">short title</div><div class="comparison-body">left_content</div></div><div class="comparison-card"><div class="comparison-label">right_label</div><div class="comparison-title">short title</div><div class="comparison-body">right_content</div></div></div>` |
+| `data-callout` | `<div class="data-callout"><div class="data-item dark"><div class="data-label">label</div><div class="data-value">$13,000</div><div class="data-desc">description</div></div><div class="data-divider">÷</div><div class="data-item"><div class="data-label">label</div><div class="data-value">$200</div><div class="data-desc">description</div></div></div>` — use `.dark` class on one item for contrast |
+| `labeled-item` | `<div class="labeled-item"><div class="item-label">label</div><div class="item-content">content</div></div>` |
+| `gold-sentence` | `<div class="gold-sentence">content</div>` — for short, insight-dense sentences |
+
+**When rendering semantic blocks:**
+- `comparison`: The `comparison-title` should be a 2-4 word summary extracted from the content. The `comparison-body` is the full text.
+- `data-callout`: Use `data-divider` between items when showing a relationship (÷, ×, =, →). Apply `.dark` to the first item for visual contrast.
+- `gold-sentence`: These are standalone — do not nest inside `<p>` tags. Use `<span class="accent-text">key phrase</span>` inside gold sentences to highlight the core insight.
+- `labeled-item`: These replace `**Label**: content` patterns. The label appears in accent color above the body text.
+
+### Content tone colors
+
+`slide_plan.json` includes `config.content_tone` (one of: `philosophical`, `technical`, `literary`, `scientific`, `default`) and `config.tone_colors` with `bg` and `accent` values. These are set automatically based on content keyword analysis.
+
+**How to apply:** Set `data-tone="{{TONE}}"` on the `<body>` tag (the template already includes this). The base CSS maps each tone to `--tone-bg` and `--tone-accent` CSS variables. Themes can use these to override their defaults for a content-appropriate feel.
+
+If `content_tone` is `default`, set `data-tone=""` (empty) so no override kicks in and the theme's natural colors show through.
+
+---
+
+### Anti-AI design guidelines
+
+These rules prevent the output from looking like typical AI-generated content. Follow them when building slide HTML:
+
+1. **No three-equal-column layouts** — if you have 3 items, use 2+1 or asymmetric grid, not equal thirds
+2. **No centered hero headlines on content slides** — titles are left-aligned; only the cover may center text
+3. **Accent color in max 2 places per slide** — labels + one highlight; don't spray accent everywhere
+4. **10:1 size ratio** — the largest element (data value, title) should be ~10× the smallest (label, caption). Example: 72px data vs 22px label
+5. **Off-black only** — use `#1a1a1a` or `#2c2c2c`, never pure `#000000`
+6. **No generic class names** — use `.comparison-card`, `.data-value`, `.gold-sentence` — never `.section`, `.panel`, `.box`
+7. **Whitespace is intentional** — large gaps between sections signal hierarchy, not emptiness
+8. **One visual anchor per slide** — each slide should have exactly one element that immediately grabs the eye (a large number, a bold title, a comparison block)
+
+---
 
 ### Design hint application
 
@@ -251,6 +301,7 @@ After assembling the content blocks for each **non-cover slide**, estimate wheth
 
 **Estimation rules:**
 - h2 heading ≈ 80px, h3 ≈ 60px, paragraph ≈ 50px per line (~18 Chinese chars per line at 32px), list item ≈ 60px, code block ≈ 40px per line, blockquote ≈ 80px
+- comparison block ≈ 280px (two side-by-side cards), data-callout ≈ 200px (row of data items), labeled-item ≈ 100px, gold-sentence ≈ 120px
 - Card inner padding: ~128px vertical (top 52px + bottom 76px including safe zone)
 - Available content height = viewport height − container padding (80px) − card padding (128px) − page number area (60px) = **viewport height − 268px**
 - For 3:4 (1440px): available ≈ 1172px. For 9:16 (1920px): available ≈ 1652px. For 1:1 (1080px): available ≈ 812px.

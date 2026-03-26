@@ -201,6 +201,184 @@ body {
   font-weight: 400;
 }
 
+/* ── Semantic Blocks: Comparison ──────────────────────────────────── */
+.comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin: 0 0 28px;
+}
+
+.comparison-card {
+  padding: 28px;
+  border-radius: 14px;
+  background: var(--surface-tint);
+}
+
+.comparison-label {
+  font-size: 22px;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.comparison-title {
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  line-height: 1.25;
+}
+
+.comparison-body {
+  font-size: 28px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+/* ── Semantic Blocks: Data Callout ───────────────────────────────── */
+.data-callout {
+  display: flex;
+  gap: 20px;
+  margin: 0 0 28px;
+  align-items: stretch;
+}
+
+.data-item {
+  flex: 1;
+  text-align: center;
+  padding: 28px 20px;
+  border-radius: 14px;
+  background: var(--surface-tint);
+}
+
+.data-item.dark {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.data-item.dark .data-label {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.data-item.dark .data-desc {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.data-label {
+  font-size: 22px;
+  opacity: 0.7;
+  margin-bottom: 8px;
+}
+
+.data-value {
+  font-size: 72px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.data-desc {
+  font-size: 22px;
+  opacity: 0.6;
+  margin-top: 8px;
+}
+
+.data-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  color: var(--text-muted);
+  padding: 0 4px;
+}
+
+/* ── Semantic Blocks: Labeled Item ───────────────────────────────── */
+.labeled-item {
+  margin: 0 0 24px;
+  padding: 24px 28px;
+  border-radius: 14px;
+  background: var(--surface-tint);
+}
+
+.labeled-item .item-label {
+  font-size: 22px;
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.labeled-item .item-content {
+  font-size: var(--body-size);
+  line-height: var(--body-lh);
+}
+
+/* ── Semantic Blocks: Gold Sentence ──────────────────────────────── */
+.gold-sentence {
+  border-left: 5px solid var(--accent);
+  padding: 20px 28px;
+  margin: 28px 0;
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1.5;
+  background: var(--surface-tint);
+  border-radius: 0 14px 14px 0;
+}
+
+/* ── Semantic Blocks: Accent Text ────────────────────────────────── */
+.accent-text {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 4px;
+}
+
+/* ── Semantic Blocks: Equation / Formula Row ─────────────────────── */
+.equation-row {
+  text-align: center;
+  font-size: 32px;
+  margin: 16px 0 28px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ── Content Tone Overrides ──────────────────────────────────────── */
+/* When data-tone is set, override key color variables with tone-specific values.
+   Themes can override these further if needed. */
+body[data-tone="philosophical"] {
+  --tone-bg: #FAF8F4;
+  --tone-accent: #7C6853;
+  --body-bg: var(--tone-bg);
+  --accent: var(--tone-accent);
+  --surface-tint: rgba(124, 104, 83, 0.05);
+  --surface-tint-strong: rgba(124, 104, 83, 0.09);
+}
+body[data-tone="technical"] {
+  --tone-bg: #F5F7FA;
+  --tone-accent: #3D5A80;
+  --body-bg: var(--tone-bg);
+  --accent: var(--tone-accent);
+  --surface-tint: rgba(61, 90, 128, 0.05);
+  --surface-tint-strong: rgba(61, 90, 128, 0.09);
+}
+body[data-tone="literary"] {
+  --tone-bg: #FBF9F1;
+  --tone-accent: #6B4E3D;
+  --body-bg: var(--tone-bg);
+  --accent: var(--tone-accent);
+  --surface-tint: rgba(107, 78, 61, 0.05);
+  --surface-tint-strong: rgba(107, 78, 61, 0.09);
+}
+body[data-tone="scientific"] {
+  --tone-bg: #F4F8F6;
+  --tone-accent: #2D6A4F;
+  --body-bg: var(--tone-bg);
+  --accent: var(--tone-accent);
+  --surface-tint: rgba(45, 106, 79, 0.05);
+  --surface-tint-strong: rgba(45, 106, 79, 0.09);
+}
+
 /* ── Ratio-Specific Overrides ────────────────────────────────────── */
 /* Add class="ratio-9-16" or "ratio-1-1" to <body> for ratio adaptation */
 .ratio-9-16 {
@@ -221,48 +399,79 @@ body {
 
 /* ── Cover Container ──────────────────────────────────────────────── */
 .cover-container {
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 }
 
 /* ── Cover Inner ──────────────────────────────────────────────────── */
 .cover-inner {
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 28px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  gap: 0;
+  padding-top: calc(var(--inner-pad-v) + 20px);
 }
 
-/* ── Cover Emoji ──────────────────────────────────────────────────── */
-.cover-emoji {
-  font-size: 100px;
-  line-height: 1;
-  margin-bottom: 16px;
+/* ── Cover REF breadcrumb ────────────────────────────────────────── */
+.cover-ref {
+  font-size: 22px;
+  color: var(--accent);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  margin-bottom: 8px;
+  line-height: 1.4;
 }
+
+.cover-ref:empty { display: none; }
+
+/* ── Cover Source line ───────────────────────────────────────────── */
+.cover-source {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 32px;
+}
+
+.cover-source:empty { display: none; }
 
 /* ── Cover Title ──────────────────────────────────────────────────── */
 .cover-title {
-  font-size: 72px;
+  font-size: 84px;
   font-weight: 700;
-  line-height: 1.2;
-  margin: 0 0 20px;
-  text-wrap: balance;
-  background: linear-gradient(135deg, currentColor, currentColor);
-  -webkit-background-clip: text;
-  background-clip: text;
+  line-height: 1.1;
+  margin: 0 0 24px;
+  letter-spacing: -0.02em;
 }
 
 /* Ratio-specific cover scaling */
-.ratio-9-16 .cover-emoji { font-size: 120px; }
-.ratio-9-16 .cover-title { font-size: 80px; }
-.ratio-1-1 .cover-emoji { font-size: 80px; }
-.ratio-1-1 .cover-title { font-size: 60px; }
+.ratio-9-16 .cover-title { font-size: 92px; }
+.ratio-1-1 .cover-title { font-size: 68px; }
 .ratio-1-1 .cover-subtitle { font-size: 32px; }
 
 /* ── Cover Subtitle ───────────────────────────────────────────────── */
 .cover-subtitle {
   font-size: 36px;
-  opacity: 0.75;
-  margin: 0;
-  line-height: 1.5;
+  color: var(--text-muted);
+  margin: 0 0 auto;
+  line-height: 1.6;
 }
+
+/* ── Cover Footer ────────────────────────────────────────────────── */
+.cover-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 28px;
+}
+
+.cover-author {
+  font-size: 24px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.cover-author:empty { display: none; }
+.cover-footer:empty { display: none; }

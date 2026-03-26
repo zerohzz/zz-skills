@@ -7,12 +7,16 @@
   <link rel="stylesheet" href="../assets/themes/{{THEME}}.css">
   <link href="{{FONT_URL}}" rel="stylesheet">
 </head>
-<body>
+<body class="{{RATIO_CLASS}}" data-tone="{{TONE}}">
   <div class="card-container cover-container">
     <div class="card-inner cover-inner">
-      <div class="cover-emoji">{{EMOJI}}</div>
+      <div class="cover-ref">{{REF}}</div>
+      <div class="cover-source">{{SOURCE}}</div>
       <h1 class="cover-title">{{TITLE}}</h1>
       <p class="cover-subtitle">{{SUBTITLE}}</p>
+      <div class="cover-footer">
+        <span class="cover-author">{{AUTHOR}}</span>
+      </div>
     </div>
   </div>
 </body>

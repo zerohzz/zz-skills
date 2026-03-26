@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.3.0] - 2026-03-26
+
+### Added
+- Semantic block detection in `plan_slides.py` — automatically identifies comparison panels, data callouts, labeled items, and gold sentences from content patterns
+- Content tone detection — analyzes content keywords to classify as philosophical, technical, literary, scientific, or default; provides matching color palette
+- New CSS block types in `base.css`: `.comparison`, `.data-callout`, `.labeled-item`, `.gold-sentence`, `.accent-text`, `.equation-row`, `.data-divider`
+- Content tone CSS variables (`--tone-bg`, `--tone-accent`) via `data-tone` attribute on `<body>`
+- Anti-AI design guidelines in SKILL.md (no equal columns, accent max 2 places, 10:1 size ratio, off-black only)
+- Theme-specific semantic block styles for sketch, claude-like, and editorial themes
+
+### Changed
+- Cover layout redesigned: left-aligned with REF breadcrumb, source line, large 84px title, and author footer (inspired by ljg-card reading card pattern)
+- `cover.html` template updated with `{{REF}}`, `{{SOURCE}}`, `{{AUTHOR}}`, `{{RATIO_CLASS}}`, `{{TONE}}` placeholders
+- `card.html` template updated with `{{RATIO_CLASS}}` and `{{TONE}}` placeholders
+- Block rendering rules expanded with semantic block HTML patterns and rendering guidelines
+- `slide_plan.json` config now includes `content_tone` and `tone_colors` fields
+
 ## [1.2.0] - 2026-03-25
 
 ### Added

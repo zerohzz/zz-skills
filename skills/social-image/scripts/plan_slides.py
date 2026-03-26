@@ -29,6 +29,10 @@ BLOCK_WEIGHTS = {
     "list": 0.8,
     "quote": 1.5,
     "image": 3.0,
+    "comparison": 4.0,
+    "data-callout": 3.5,
+    "labeled-item": 1.5,
+    "gold-sentence": 2.0,
 }
 
 # Ratio-specific weight targets: taller ratios fit more content per slide
@@ -55,6 +59,102 @@ DEFAULT_EMOJI_GENERIC = "📖"
 DEFAULT_EMOJI_TECHNICAL = "💡"
 DEFAULT_EMOJI_NATURE = "🌿"
 DEFAULT_EMOJI_CREATIVE = "🎨"
+
+# Content tone color palettes (bg, accent)
+CONTENT_TONES = {
+    "philosophical": {"bg": "#FAF8F4", "accent": "#7C6853"},
+    "technical":     {"bg": "#F5F7FA", "accent": "#3D5A80"},
+    "literary":      {"bg": "#FBF9F1", "accent": "#6B4E3D"},
+    "scientific":    {"bg": "#F4F8F6", "accent": "#2D6A4F"},
+    "default":       {"bg": "#FAFAF8", "accent": "#4A4A4A"},
+}
+
+# Keywords for tone detection
+_PHILOSOPHICAL_KW = re.compile(
+    r'(?:思考|哲学|思维|认知|本质|原理|逻辑|思辨|philosophy|thinking|principle|'
+    r'cognition|paradigm|ontology|epistemology|mental model|first principles)',
+    re.IGNORECASE,
+)
+_TECHNICAL_KW = re.compile(
+    r'(?:代码|编程|架构|部署|API|算法|系统|工程|数据库|性能|'
+    r'code|programming|architecture|deploy|algorithm|system|engineering|database|'
+    r'performance|infrastructure|pipeline|framework|runtime)',
+    re.IGNORECASE,
+)
+_LITERARY_KW = re.compile(
+    r'(?:故事|文学|叙事|散文|小说|诗|narrative|literary|story|essay|fiction|poetry|'
+    r'memoir|prose|character|voice|writing)',
+    re.IGNORECASE,
+)
+_SCIENTIFIC_KW = re.compile(
+    r'(?:研究|实验|数据|论文|发现|科学|统计|假设|变量|research|experiment|data|paper|'
+    r'discovery|science|statistics|hypothesis|variable|study|findings|methodology)',
+    re.IGNORECASE,
+)
+
+# Comparison detection patterns
+_CONTRAST_KW = re.compile(
+    r'(?:vs\.?|versus|而不是|但是|相比|与其|不同|instead|rather than|on the other hand|'
+    r'compared to|unlike|whereas|但|却|反而|however)',
+    re.IGNORECASE,
+)
+
+# Labeled item patterns: **Label**: content or Label：content
+_LABELED_ITEM_RE = re.compile(
+    r'^\*\*(.{2,20})\*\*\s*[:：]\s*(.+)',
+    re.DOTALL,
+)
+_COLON_LABEL_RE = re.compile(
+    r'^(.{2,15})\s*[:：]\s*(.{10,})',
+)
+
+# Gold sentence keywords
+_GOLD_SENTENCE_KW_ZH = re.compile(
+    r'(?:核心|关键|本质|真正|根本|最重要|一句话|说白了|归根结底|'
+    r'永远|不是.*而是|与其.*不如)',
+)
+_GOLD_SENTENCE_KW_EN = re.compile(
+    r'\b(?:the key|crucial|essential|the real|in short|bottom line|'
+    r'the truth is|not about.*but about|fundamentally|never|always)\b',
+    re.IGNORECASE,
+)
+
+# Data point detection (used by both _detect_semantic_blocks and _extract_quotable_content)
+_DATA_POINT_RE = re.compile(
+    r'(?:'
+    r'\$\d[\d,.]*'                      # dollar amounts: $12, $1,500
+    r'|\d+[\d.]*\s*%'                   # percentages: 80%, 3.5%
+    r'|\d+[\d.]*\s*(?:小时|分钟|h|hr|min|天|秒|ms|s)\b'  # durations
+    r'|\d+[\d.]*\s*(?:px|rem|em|KB|MB|GB|TB)\b'  # technical units
+    r'|\d+[\d,.]*\s*(?:个|条|篇|次|行|步|项|张|页)\b'  # Chinese counters
+    r'|\d{2,}[\d,.]*'                   # standalone numbers 2+ digits
+    r')',
+    re.IGNORECASE,
+)
+
+# Quotable content keywords
+_QUOTABLE_KEYWORDS_ZH = re.compile(
+    r'(?:最重要|关键|核心|本质|真正|其实|一句话|说白了|瓶颈|永远|'
+    r'不是.*而是|与其.*不如)',
+)
+_QUOTABLE_KEYWORDS_EN = re.compile(
+    r'\b(?:the key|crucial|essential|never|always|the real|in short|'
+    r'bottom line|the truth is|not about.*but about)\b',
+    re.IGNORECASE,
+)
+
+# Proper noun / tool detection
+_PROPER_NOUN_RE = re.compile(
+    r'\b(?:'
+    r'ChatGPT|GPT-\d|Claude|Gemini|Copilot|'
+    r'GitHub|Git|Docker|Kubernetes|AWS|GCP|Azure|Vercel|Netlify|'
+    r'React|Vue|Angular|Next\.?js|Nuxt|Astro|Svelte|'
+    r'Tailwind|Bootstrap|CSS|HTML|JavaScript|TypeScript|Python|Rust|Go|'
+    r'Node\.?js|Deno|Bun|npm|pnpm|yarn|pip|cargo|'
+    r'PostgreSQL|MySQL|MongoDB|Redis|Supabase|Firebase|'
+    r'Playwright|Puppeteer|Selenium|Jest|Vitest|pytest'
+    r')\b'
+)
 
 
 # ---------------------------------------------------------------------------
@@ -260,6 +360,179 @@ def extract_blocks(text: str) -> list:
 
 
 # ---------------------------------------------------------------------------
+# Content tone detection
+# ---------------------------------------------------------------------------
+
+def detect_content_tone(blocks: list, metadata: dict) -> str:
+    """Analyze content keywords to determine the visual tone.
+
+    Returns one of: philosophical, technical, literary, scientific, default.
+    """
+    all_text = metadata.get("title", "") + " " + metadata.get("subtitle", "")
+    for block in blocks:
+        btype = block.get("type")
+        if btype in ("heading", "paragraph", "quote"):
+            all_text += " " + block.get("content", "")
+        elif btype == "list":
+            all_text += " " + " ".join(block.get("items", []))
+
+    scores = {
+        "philosophical": len(_PHILOSOPHICAL_KW.findall(all_text)),
+        "technical": len(_TECHNICAL_KW.findall(all_text)),
+        "literary": len(_LITERARY_KW.findall(all_text)),
+        "scientific": len(_SCIENTIFIC_KW.findall(all_text)),
+    }
+
+    best = max(scores, key=scores.get)
+    if scores[best] >= 2:
+        return best
+    return "default"
+
+
+# ---------------------------------------------------------------------------
+# Semantic block detection (post-processing)
+# ---------------------------------------------------------------------------
+
+def _detect_semantic_blocks(blocks: list, language: str = "zh") -> list:
+    """Post-process flat block list to identify semantic patterns.
+
+    Detects: comparison, data-callout, labeled-item, gold-sentence.
+    Returns a new list with some blocks replaced or upgraded.
+    """
+    result = []
+    i = 0
+
+    while i < len(blocks):
+        block = blocks[i]
+        btype = block.get("type")
+        content = block.get("content", "")
+
+        # --- Gold sentence detection ---
+        if btype == "paragraph" and content:
+            char_count = len(content)
+            is_short = (char_count < 25 and language == "zh") or (char_count < 60 and language == "en")
+            has_insight = bool(
+                _GOLD_SENTENCE_KW_ZH.search(content) or _GOLD_SENTENCE_KW_EN.search(content)
+            )
+            if is_short and has_insight:
+                result.append({
+                    "type": "gold-sentence",
+                    "content": content,
+                    "weight": block.get("weight", 2.0),
+                })
+                i += 1
+                continue
+
+        # --- Labeled item detection ---
+        if btype == "paragraph" and content:
+            m = _LABELED_ITEM_RE.match(content)
+            if not m:
+                m = _COLON_LABEL_RE.match(content)
+            if m:
+                result.append({
+                    "type": "labeled-item",
+                    "label": m.group(1).strip(),
+                    "content": m.group(2).strip(),
+                    "weight": block.get("weight", 1.5),
+                })
+                i += 1
+                continue
+
+        # --- Comparison detection (two adjacent paragraphs with contrast) ---
+        if (btype == "paragraph" and i + 1 < len(blocks)
+                and blocks[i + 1].get("type") == "paragraph"):
+            next_content = blocks[i + 1].get("content", "")
+            combined = content + " " + next_content
+            # Also check the preceding heading for contrast keywords
+            prev_heading = ""
+            if result and result[-1].get("type") == "heading":
+                prev_heading = result[-1].get("content", "")
+            if _CONTRAST_KW.search(combined) or _CONTRAST_KW.search(prev_heading):
+                # Extract labels from first few words or use defaults
+                left_label = _extract_short_label(content, language)
+                right_label = _extract_short_label(next_content, language)
+                result.append({
+                    "type": "comparison",
+                    "left_label": left_label,
+                    "left_content": content,
+                    "right_label": right_label,
+                    "right_content": next_content,
+                    "weight": (block.get("weight", 1.0) + blocks[i + 1].get("weight", 1.0)) * 1.2,
+                })
+                i += 2
+                continue
+
+        # --- Data callout detection (paragraph with prominent data points) ---
+        if btype == "paragraph" and content:
+            data_matches = _DATA_POINT_RE.findall(content)
+            if len(data_matches) >= 2:
+                items = []
+                for dp in data_matches[:3]:
+                    # Extract surrounding context for label/description
+                    idx = content.find(dp)
+                    before = content[max(0, idx - 30):idx].strip()
+                    after = content[idx + len(dp):idx + len(dp) + 30].strip()
+                    # Clean up label: take last phrase before the number
+                    label = _extract_data_label(before)
+                    desc = _extract_data_desc(after)
+                    items.append({
+                        "value": dp.strip(),
+                        "label": label,
+                        "description": desc,
+                    })
+                result.append({
+                    "type": "data-callout",
+                    "items": items,
+                    "weight": block.get("weight", 1.0) * 1.5,
+                })
+                i += 1
+                continue
+
+        # --- Pass through unchanged ---
+        result.append(block)
+        i += 1
+
+    return result
+
+
+def _extract_short_label(text: str, language: str) -> str:
+    """Extract a short label (3-10 chars) from the beginning of text."""
+    # Try to find a bolded prefix
+    m = re.match(r'\*\*(.{2,15})\*\*', text)
+    if m:
+        return m.group(1)
+    # Take first clause
+    for sep in ['，', '。', ',', '.', '：', ':']:
+        idx = text.find(sep)
+        if 2 < idx < 15:
+            return text[:idx]
+    # Fallback: first N characters
+    limit = 8 if language == "zh" else 20
+    return text[:limit] + ("…" if len(text) > limit else "")
+
+
+def _extract_data_label(before_text: str) -> str:
+    """Extract a label from text preceding a data point."""
+    # Take last meaningful phrase
+    before_text = re.sub(r'[，,。.：:；;]', '|', before_text)
+    parts = [p.strip() for p in before_text.split('|') if p.strip()]
+    if parts:
+        return parts[-1][:15]
+    return ""
+
+
+def _extract_data_desc(after_text: str) -> str:
+    """Extract a description from text following a data point."""
+    after_text = re.sub(r'^[，,。.：:；;\s]+', '', after_text)
+    # Take first clause
+    for sep in ['，', '。', ',', '.', '；', ';']:
+        idx = after_text.find(sep)
+        if idx > 0:
+            return after_text[:idx]
+    return after_text[:20]
+
+
+# ---------------------------------------------------------------------------
 # normalize_content: main entry for this script
 # ---------------------------------------------------------------------------
 
@@ -352,6 +625,19 @@ def assign_weights(blocks: list, ratio: str = "3:4") -> list:
 
         elif btype == "image":
             b["weight"] = BLOCK_WEIGHTS["image"]
+
+        elif btype == "comparison":
+            # Scale by content length: base 4.0, increase for longer content
+            left_len = len(b.get("left_content", ""))
+            right_len = len(b.get("right_content", ""))
+            b["weight"] = max(BLOCK_WEIGHTS["comparison"], (left_len + right_len) / 40)
+
+        elif btype == "data-callout":
+            item_count = len(b.get("items", []))
+            b["weight"] = max(BLOCK_WEIGHTS["data-callout"], item_count * 1.5)
+
+        elif btype in ("labeled-item", "gold-sentence"):
+            b["weight"] = BLOCK_WEIGHTS.get(btype, 2.0)
 
         else:
             b["weight"] = 1.0
@@ -620,41 +906,6 @@ def _enforce_variety(slides: list) -> None:
 # Extractable content — preserve quotable material for fill components
 # ---------------------------------------------------------------------------
 
-_DATA_POINT_RE = re.compile(
-    r'(?:'
-    r'\$\d[\d,.]*'                      # dollar amounts: $12, $1,500
-    r'|\d+[\d.]*\s*%'                   # percentages: 80%, 3.5%
-    r'|\d+[\d.]*\s*(?:小时|分钟|h|hr|min|天|秒|ms|s)\b'  # durations
-    r'|\d+[\d.]*\s*(?:px|rem|em|KB|MB|GB|TB)\b'  # technical units
-    r'|\d+[\d,.]*\s*(?:个|条|篇|次|行|步|项|张|页)\b'  # Chinese counters
-    r'|\d{2,}[\d,.]*'                   # standalone numbers 2+ digits
-    r')',
-    re.IGNORECASE,
-)
-
-_QUOTABLE_KEYWORDS_ZH = re.compile(
-    r'(?:最重要|关键|核心|本质|真正|其实|一句话|说白了|瓶颈|永远|'
-    r'不是.*而是|与其.*不如)',
-)
-_QUOTABLE_KEYWORDS_EN = re.compile(
-    r'\b(?:the key|crucial|essential|never|always|the real|in short|'
-    r'bottom line|the truth is|not about.*but about)\b',
-    re.IGNORECASE,
-)
-
-_PROPER_NOUN_RE = re.compile(
-    r'\b(?:'
-    r'ChatGPT|GPT-\d|Claude|Gemini|Copilot|'
-    r'GitHub|Git|Docker|Kubernetes|AWS|GCP|Azure|Vercel|Netlify|'
-    r'React|Vue|Angular|Next\.?js|Nuxt|Astro|Svelte|'
-    r'Tailwind|Bootstrap|CSS|HTML|JavaScript|TypeScript|Python|Rust|Go|'
-    r'Node\.?js|Deno|Bun|npm|pnpm|yarn|pip|cargo|'
-    r'PostgreSQL|MySQL|MongoDB|Redis|Supabase|Firebase|'
-    r'Playwright|Puppeteer|Selenium|Jest|Vitest|pytest'
-    r')\b'
-)
-
-
 def _extract_quotable_content(slide_blocks: list) -> dict:
     """Extract quotable sentences, data points, tools, and code blocks from slide blocks."""
     quotes = []
@@ -672,10 +923,17 @@ def _extract_quotable_content(slide_blocks: list) -> dict:
 
         # Gather all text from this block
         texts = []
-        if btype in ("heading", "paragraph", "quote"):
+        if btype in ("heading", "paragraph", "quote", "gold-sentence"):
             texts = [content]
         elif btype == "list":
             texts = block.get("items", [])
+        elif btype == "comparison":
+            texts = [block.get("left_content", ""), block.get("right_content", "")]
+        elif btype == "data-callout":
+            for item in block.get("items", []):
+                texts.append(f"{item.get('label', '')} {item.get('value', '')} {item.get('description', '')}")
+        elif btype == "labeled-item":
+            texts = [f"{block.get('label', '')} {content}"]
 
         for text in texts:
             # Extract data points
@@ -723,10 +981,12 @@ def build_slide_plan(
     total_weight: float,
     target_weight_per_slide: float,
     language: str,
+    content_tone: str = "default",
 ) -> dict:
     """Assemble the full output JSON structure."""
     ratio = config["ratio"]
     ratio_cfg = RATIO_CONFIGS[ratio]
+    tone_colors = CONTENT_TONES.get(content_tone, CONTENT_TONES["default"])
 
     return {
         "config": {
@@ -737,6 +997,8 @@ def build_slide_plan(
             "theme": config["theme"],
             "language": language,
             "author": config.get("author", ""),
+            "content_tone": content_tone,
+            "tone_colors": tone_colors,
         },
         "cover": cover,
         "slides": slides,
@@ -801,6 +1063,12 @@ def main():
     # 2. Detect language
     language = detect_language(blocks)
 
+    # 2.5. Detect content tone
+    content_tone = detect_content_tone(blocks, metadata)
+
+    # 2.7. Detect semantic blocks (comparison, data-callout, labeled-item, gold-sentence)
+    blocks = _detect_semantic_blocks(blocks, language)
+
     # 3. Assign weights
     weighted_blocks = assign_weights(blocks, args.ratio)
 
@@ -825,6 +1093,7 @@ def main():
         total_weight=total_weight,
         target_weight_per_slide=target_per_slide,
         language=language,
+        content_tone=content_tone,
     )
 
     # 7. Write output

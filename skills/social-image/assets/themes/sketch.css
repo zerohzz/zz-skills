@@ -81,6 +81,20 @@
   border-radius: 4px;
 }
 
+/* Semantic block overrides */
+.comparison-card {
+  background: rgba(183, 71, 42, 0.06);
+  border: 2px solid #e0ddd5;
+}
+.comparison-label { color: #c0392b; }
+.comparison-title { font-family: 'Noto Serif SC', 'Lora', serif; }
+.data-item { background: rgba(183, 71, 42, 0.06); }
+.data-item.dark { background: #2c2c2c; }
+.data-value { font-family: 'Lora', 'Noto Serif SC', serif; }
+.gold-sentence { font-family: 'Noto Serif SC', 'Lora', serif; border-left-color: #c0392b; background: rgba(183, 71, 42, 0.06); }
+.labeled-item { border: 2px solid #e0ddd5; background: transparent; }
+.labeled-item .item-label { color: #c0392b; }
+
 .cover-container {
   background: linear-gradient(145deg, #3d3d3d 0%, #1a1a1a 50%, #2d2d2d 100%);
 }

@@ -83,6 +83,17 @@
   color: #8b0000;
 }
 
+/* Semantic block overrides */
+.comparison-card { background: rgba(139, 0, 0, 0.04); border: 1px solid #e8e0d0; }
+.comparison-label { color: #8b0000; font-family: 'Crimson Pro', serif; }
+.comparison-title { font-family: 'Playfair Display', serif; }
+.data-item { background: rgba(139, 0, 0, 0.04); }
+.data-item.dark { background: #1a1612; }
+.data-value { font-family: 'Playfair Display', serif; }
+.gold-sentence { font-family: 'Playfair Display', serif; font-style: italic; border-left-color: #8b0000; background: rgba(139, 0, 0, 0.04); }
+.labeled-item { border: 1px solid #e8e0d0; background: transparent; }
+.labeled-item .item-label { color: #8b0000; font-family: 'Crimson Pro', serif; }
+
 .cover-inner {
   background: #faf8f2;
   border: 1px solid #e8e0d0;
