@@ -25,6 +25,7 @@ npx skills add zerohzz/zz-skills
 /plugin install gif-recorder@zz-skills
 /plugin install social-image@zz-skills
 /plugin install write-prompt@zz-skills
+/plugin install md-note@zz-skills
 ```
 
 Or just tell Claude Code:
@@ -47,6 +48,7 @@ Enable **auto-update** to always get the latest versions.
 | [gif-recorder](#gif-recorder) | Record any website as a polished animated GIF |
 | [social-image](#social-image) | Transform content into multi-slide XHS/Instagram carousels |
 | [write-prompt](#write-prompt) | Research-backed prompt optimizer with diagnostic analysis |
+| [md-note](#md-note) | Reformat messy notes into clean Obsidian-flavored markdown |
 
 ---
 
@@ -224,6 +226,21 @@ Research-backed prompt optimizer with diagnostic analysis. Classifies intent and
 ```
 
 **Trigger phrases:** `"Optimize this prompt"` · `"Improve my prompt"` · `"优化提示词"` · `"Refine this prompt"`
+
+---
+
+### md-note
+
+Reformat messy, unstructured notes into clean Obsidian-flavored markdown with YAML frontmatter, heading hierarchy, normalized tags, and descriptive links. Handles raw text, voice transcriptions, meeting notes, and brain-dumps — outputs structured notes ready for your Obsidian vault.
+
+**Usage:**
+
+```bash
+/md-note notes/raw-meeting.txt
+/md-note "paste your messy notes here"
+```
+
+**Trigger phrases:** `"Clean up my notes"` · `"Format this for Obsidian"` · `"Reformat my notes"` · `"Add frontmatter"` · `"Markdown cleanup"`
 
 ---
 
